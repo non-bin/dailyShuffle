@@ -2,6 +2,23 @@
 
 Create shuffled versions of your Spotify playlists, refreshed every day
 
+## How to Run
+
+Create a `.env` file in the root of the repo, using the following template:
+
+```ini
+# Required
+DAILYSHUFFLE_CLIENT_ID=changeme
+DAILYSHUFFLE_CLIENT_SECRET=changeme
+
+# Optional (these are the defaults)
+DAILYSHUFFLE_HOSTNAME=127.0.0.1
+DAILYSHUFFLE_PORT=8080
+DAILYSHUFFLE_REDIRECT_URL=http://127.0.0.1:8080/callback
+```
+
+Then just run the server with `bun dev`
+
 ## License
 
     Create shuffled versions of your playlists, refreshed every day

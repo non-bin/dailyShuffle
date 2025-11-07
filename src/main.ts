@@ -2,8 +2,12 @@ import * as auth from './lib/auth';
 import * as api from './lib/api';
 import * as db from './lib/db';
 
+const HOSTNAME = process.env.DAILYSHUFFLE_HOSTNAME || '127.0.0.1';
+const PORT = process.env.DAILYSHUFFLE_PORT || '8080';
+
 const server = Bun.serve({
-  port: 5173,
+  hostname: HOSTNAME,
+  port: PORT,
   routes: {
     '/': (req) => {
       return auth.redirectToAuth(req);

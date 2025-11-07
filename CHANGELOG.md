@@ -22,4 +22,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Helper functions ready for a UI
 - Basic functionality
 
-[unreleased]: github.com/non-bin/dailyShuffle
+[unreleased]: https://github.com/non-bin/dailyShuffle

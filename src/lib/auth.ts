@@ -4,15 +4,15 @@ import * as t from './types';
 
 const SCOPE = 'user-read-private user-read-email playlist-modify-public playlist-modify-private';
 
-const REDIRECT_URL = process.env.SPOTIFY_API_REDIRECT_URL || 'http://127.0.0.1:5173/callback';
+const REDIRECT_URL = process.env.DAILYSHUFFLE_REDIRECT_URL || 'http://127.0.0.1:8080/callback';
 
-const CLIENT_ID = process.env.SPOTIFY_API_CLIENT_ID || '';
+const CLIENT_ID = process.env.DAILYSHUFFLE_CLIENT_ID || '';
 if (CLIENT_ID.length === 0) {
-  throw new Error('Please set SPOTIFY_API_CLIENT_ID');
+  throw new Error('Please set DAILYSHUFFLE_CLIENT_ID');
 }
-const CLIENT_SECRET = process.env.SPOTIFY_API_CLIENT_SECRET || '';
+const CLIENT_SECRET = process.env.DAILYSHUFFLE_CLIENT_SECRET || '';
 if (CLIENT_SECRET.length === 0) {
-  throw new Error('Please set SPOTIFY_API_CLIENT_SECRET');
+  throw new Error('Please set DAILYSHUFFLE_CLIENT_SECRET');
 }
 const AUTHORIZATION = 'Basic ' + Buffer.from(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64');
 
