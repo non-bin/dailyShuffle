@@ -61,7 +61,7 @@ export async function completeAuth(req: Bun.BunRequest) {
       uid: profile.id,
       email: profile.email,
       accessToken: res.access_token,
-      tokenExpiry: new Date(Date.now() + res.expires_in * 1000),
+      accessTokenExpiry: new Date(Date.now() + res.expires_in * 1000),
       refreshToken: res.refresh_token
     });
 
@@ -124,7 +124,11 @@ export async function getAccessToken(uid: string, expiryWindowMinutes: number = 
   const user = db.getUser(uid);
   if (!user) throw new Error('Unknown uid!');
 
-  if (user.accessToken && user.tokenExpiry && user.tokenExpiry > new Date(Date.now() + expiryWindowMinutes * 60000)) {
+  if (
+    user.accessToken &&
+    user.accessTokenExpiry &&
+    user.accessTokenExpiry > new Date(Date.now() + expiryWindowMinutes * 60000)
+  ) {
     return user.accessToken;
   }
 
@@ -132,7 +136,7 @@ export async function getAccessToken(uid: string, expiryWindowMinutes: number = 
     const res = await refreshAccessToken(user.refreshToken);
 
     user.accessToken = res.access_token;
-    user.tokenExpiry = new Date(Date.now() + res.expires_in * 1000);
+    user.accessTokenExpiry = new Date(Date.now() + res.expires_in * 1000);
     user.refreshToken = res.refresh_token;
 
     db.setUser(user);

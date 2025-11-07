@@ -27,7 +27,7 @@ export interface User {
   uid: string;
   email: string;
   accessToken?: string;
-  tokenExpiry?: Date;
+  accessTokenExpiry?: Date;
   refreshToken?: string;
 }
 
@@ -38,7 +38,7 @@ export function isUser(x: any): x is User {
     typeof x.uid === 'string' &&
     typeof x.email === 'string' &&
     (typeof x.accessToken === 'string' || x.accessToken === null) &&
-    (x.tokenExpiry instanceof Date || x.tokenExpiry === null) &&
+    (x.accessTokenExpiry instanceof Date || x.accessTokenExpiry === null) &&
     (typeof x.refreshToken === 'string' || x.refreshToken === null)
   ) {
     return true;

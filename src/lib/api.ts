@@ -16,13 +16,13 @@ export async function fetchProfile(accessToken: string): Promise<t.UserProfile> 
   return result;
 }
 
-export async function fetchUserPlaylists(token: string): Promise<t.Playlist[]> {
+export async function fetchUserPlaylists(accessToken: string): Promise<t.Playlist[]> {
   let items: t.Playlist[] = [];
   let next = 'https://api.spotify.com/v1/me/playlists?limit=50';
   do {
     const result = await fetch(next, {
       method: 'GET',
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${accessToken}` }
     }).then((res) => res.json());
 
     if (result && typeof result === 'object' && 'items' in result && t.isListOf(result.items, t.isPlaylist)) {
@@ -61,7 +61,7 @@ export async function createPlaylist(
   throw new Error('Server response was not a Playlist!', { cause: result });
 }
 
-export async function fetchPlaylist(pid: string, accessToken: string): Promise<t.Playlist> {
+export async function fetchPlaylist(accessToken: string, pid: string): Promise<t.Playlist> {
   const result = await fetch(`https://api.spotify.com/v1/playlists/${pid}`, {
     method: 'GET',
     headers: { Authorization: `Bearer ${accessToken}` }
@@ -77,13 +77,13 @@ export async function fetchPlaylist(pid: string, accessToken: string): Promise<t
 /**
  * @returns The list of track URIs in the playlist
  */
-export async function fetchPlaylistTracks(token: string, pid: string): Promise<string[]> {
+export async function fetchPlaylistTracks(accessToken: string, pid: string): Promise<string[]> {
   let items: string[] = [];
   let next = `https://api.spotify.com/v1/playlists/${pid}/tracks?limit=50&fields=next,items(track(uri))`;
   do {
     const result = await fetch(next, {
       method: 'GET',
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${accessToken}` }
     }).then((res) => res.json());
 
     if (result && typeof result === 'object' && 'items' in result && Array.isArray(result.items)) {
@@ -111,13 +111,13 @@ export async function fetchPlaylistTracks(token: string, pid: string): Promise<s
 /**
  * @returns New snapshot_id
  */
-export async function updatePlaylistTracks(token: string, pid: string, tracksURIs: string[]): Promise<string> {
+export async function updatePlaylistTracks(accessToken: string, pid: string, tracksURIs: string[]): Promise<string> {
   let snapshotId = '';
 
   // Initial chunk
   const result = await fetch(`https://api.spotify.com/v1/playlists/${pid}/tracks`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
     body: JSON.stringify({ uris: tracksURIs.slice(0, 100) })
   }).then((res) => res.json());
 
@@ -130,7 +130,7 @@ export async function updatePlaylistTracks(token: string, pid: string, tracksURI
   for (let i = 100; i < tracksURIs.length; i += 100) {
     const result = await fetch(`https://api.spotify.com/v1/playlists/${pid}/tracks`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
       body: JSON.stringify({ uris: tracksURIs.slice(i, i + 100) })
     }).then((res) => res.json());
 
@@ -144,10 +144,10 @@ export async function updatePlaylistTracks(token: string, pid: string, tracksURI
 }
 
 export async function runJob(job: t.Job) {
-  const token = await auth.getAccessToken(job.uid);
-  const tracks = await fetchPlaylistTracks(token, job.sourcePID);
+  const accessToken = await auth.getAccessToken(job.uid);
+  const tracks = await fetchPlaylistTracks(accessToken, job.sourcePID);
   shuffle(tracks);
-  await updatePlaylistTracks(token, job.destinationPID, tracks);
+  await updatePlaylistTracks(accessToken, job.destinationPID, tracks);
 }
 
 export function runAllJobs() {
