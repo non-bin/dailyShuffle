@@ -1,5 +1,4 @@
 import * as auth from './lib/auth';
-import * as t from './lib/types';
 import * as api from './lib/api';
 import * as db from './lib/db';
 
@@ -32,3 +31,9 @@ const server = Bun.serve({
 });
 
 console.log(`Server running at ${server.url}`);
+
+api.runAllJobs();
+
+setInterval(() => {
+  api.runAllJobs();
+}, 24 * 60 * 60 * 1000);

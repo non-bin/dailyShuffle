@@ -67,7 +67,7 @@ export async function completeAuth(req: Bun.BunRequest) {
 
     return Response.json(profile);
   } catch (err) {
-    console.error((err as Error).cause);
+    if (err instanceof Error) console.error(err.cause);
     console.error(err);
 
     return new Response(Error.isError(err) ? `ERROR: ${err.message}` : 'UNKNOWN', { status: 500 });

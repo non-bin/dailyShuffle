@@ -94,3 +94,25 @@ export function isAccessTokenResponse(x: any): x is AccessTokenResponse {
     return false;
   }
 }
+
+export interface Job {
+  uid: string;
+  destinationPID: string;
+  sourcePID: string;
+  nextRun: Date;
+}
+
+export function isJob(x: any): x is Job {
+  if (
+    x &&
+    typeof x === 'object' &&
+    typeof x.uid === 'string' &&
+    typeof x.destinationPID === 'string' &&
+    typeof x.sourcePID === 'string' &&
+    x.nextRun instanceof Date
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+}
