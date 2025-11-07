@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Save snapshot ids
   - Revert on error
 - Handle rate limits
-- Don't give the client the code verifier
 - Update or remove the last run db value
 
 ## [Unreleased]

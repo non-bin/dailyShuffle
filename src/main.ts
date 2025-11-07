@@ -11,17 +11,6 @@ const server = Bun.serve({
 
     '/callback': (req) => {
       return auth.completeAuth(req);
-    },
-
-    '/test': async (req) => {
-      const uid = new URLSearchParams(new URL(req.url).search).get('uid');
-
-      if (!uid) return new Response('Missing uid parameter', { status: 400 });
-      const user = db.getUser(uid);
-      if (!user) return new Response('Unknown uid', { status: 401 });
-      if (!user.accessToken) return new Response('User is not authenticated', { status: 401 });
-
-      return Response.json(await api.fetchProfile(user.accessToken));
     }
   },
 
@@ -36,4 +25,5 @@ api.runAllJobs();
 
 setInterval(() => {
   api.runAllJobs();
+  auth.cleanVerifiers();
 }, 24 * 60 * 60 * 1000);

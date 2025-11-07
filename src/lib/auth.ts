@@ -16,12 +16,44 @@ if (CLIENT_SECRET.length === 0) {
 }
 const AUTHORIZATION = 'Basic ' + Buffer.from(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64');
 
+let verifiers: ({ verifier: string; expiry: Date } | null)[] = [];
+
+export function cleanVerifiers() {
+  const now = new Date();
+
+  for (let i = 0; i < verifiers.length; i++) {
+    const x = verifiers[i];
+    if (!x || x.expiry < now) {
+      verifiers[i] = null;
+    }
+  }
+}
+
+function addVerifier(verifier: string, expiry: Date = new Date(Date.now() + 15 * 60 * 1000)): number {
+  for (let i = 0; i < verifiers.length; i++) {
+    if (!verifiers[i]) {
+      verifiers[i] = { verifier, expiry };
+      return i;
+    }
+  }
+
+  return verifiers.push({ verifier, expiry }) - 1;
+}
+
+function removeVerifier(index: number): string | null {
+  const entry = verifiers[index];
+  verifiers[index] = null;
+
+  if (!entry || entry.expiry < new Date()) return null;
+  return entry.verifier;
+}
+
 /**
  * Redirect the user to Spotify api authentication, which will then redirect to {@link completeAuth}
  */
 export async function redirectToAuth(req: Bun.BunRequest) {
   const verifier = randomString(128);
-  req.cookies.set('verifier', verifier, { maxAge: 60 * 15 }); // 15 minutes
+  req.cookies.set('verifier', addVerifier(verifier).toString(), { maxAge: 60 * 15 }); // 15 minutes
   const challenge = await generateCodeChallenge(verifier);
 
   const params = new URLSearchParams();
@@ -42,7 +74,11 @@ export async function redirectToAuth(req: Bun.BunRequest) {
  */
 export async function completeAuth(req: Bun.BunRequest) {
   try {
-    const verifier = req.cookies.get('verifier');
+    const verifierIndex = req.cookies.get('verifier');
+    if (!verifierIndex) {
+      throw new Error('No verifier! Maybe your session expired');
+    }
+    const verifier = removeVerifier(Number.parseInt(verifierIndex));
     if (!verifier) {
       throw new Error('No verifier! Maybe your session expired');
     }
