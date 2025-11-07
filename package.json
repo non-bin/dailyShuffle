@@ -6,7 +6,7 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "bun run ./src/main.ts",
-    "release": "./release"
+    "release": "./release.sh"
   },
   "devDependencies": {
     "@types/bun": "latest"
