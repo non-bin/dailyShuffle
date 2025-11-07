@@ -1,7 +1,7 @@
 import { Database } from 'bun:sqlite';
 import * as t from './types';
 
-const db = new Database('users.sqlite', { create: true, strict: true });
+const db = new Database('dailyShuffle.sqlite', { create: true, strict: true });
 db.query(
   `
     CREATE TABLE IF NOT EXISTS users (
