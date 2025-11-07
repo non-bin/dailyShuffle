@@ -42,18 +42,13 @@ export async function createPlaylist(
   accessToken: string,
   uid: string,
   name: string,
-  description: string,
+  description: string = '',
   publicAccess: boolean = true
 ): Promise<t.Playlist> {
-  const params = new URLSearchParams();
-  params.append('name', name);
-  params.append('description', description);
-  params.append('public', publicAccess ? 'true' : 'false');
-
   const result = await fetch(`https://api.spotify.com/v1/users/${uid}/playlists`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
-    body: params
+    body: JSON.stringify({ name, description, public: publicAccess })
   }).then((res) => res.json());
 
   if (t.isPlaylist(result)) {
