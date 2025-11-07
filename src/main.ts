@@ -32,15 +32,3 @@ const server = Bun.serve({
 });
 
 console.log(`Server running at ${server.url}`);
-
-try {
-  const user = db.getUser('w4ifp2anlm4zlw4ett8irmfa6');
-  if (user && user.accessToken) {
-    const playlists = await api.fetchUserPlaylists(user.accessToken);
-    console.log(playlists);
-  } else {
-    console.error('fail');
-  }
-} catch (error) {
-  console.error(error);
-}
