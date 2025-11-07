@@ -1,5 +1,14 @@
 export type bunServeHandler = Bun.Serve.Handler<Bun.BunRequest, Bun.Server<undefined>, Response>;
 
+export function isListOf<T>(x: any, typeGuard: (x: any) => x is T): x is T[] {
+  x.forEach((y: any) => {
+    if (!typeGuard(y)) {
+      return false;
+    }
+  });
+  return true;
+}
+
 export interface UserProfile {
   display_name: string;
   email: string;
@@ -62,15 +71,6 @@ export function isPlaylist(x: any): x is Playlist {
   } else {
     return false;
   }
-}
-
-export function isPlaylists(x: any): x is Playlist[] {
-  x.forEach((y: any) => {
-    if (!isPlaylist(y)) {
-      return false;
-    }
-  });
-  return true;
 }
 
 export interface AccessTokenResponse {
