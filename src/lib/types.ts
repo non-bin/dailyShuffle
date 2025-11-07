@@ -1,3 +1,5 @@
+export type bunServeHandler = Bun.Serve.Handler<Bun.BunRequest, Bun.Server<undefined>, Response>;
+
 export interface UserProfile {
   display_name: string;
   email: string;
@@ -5,7 +7,7 @@ export interface UserProfile {
 }
 
 export function isUserProfile(x: any): x is UserProfile {
-  if (typeof x.display_name === 'string' && typeof x.email === 'string' && typeof x.id === 'string') {
+  if (x && typeof x === 'object' && 'string' && typeof x.email === 'string' && typeof x.id === 'string') {
     return true;
   } else {
     return false;
@@ -13,16 +15,22 @@ export function isUserProfile(x: any): x is UserProfile {
 }
 
 export interface User {
-  accessToken?: string;
+  uid: string;
   email: string;
+  accessToken?: string;
+  tokenExpiry?: Date;
+  refreshToken?: string;
 }
 
 export function isUser(x: any): x is User {
   if (
     x &&
     typeof x === 'object' &&
+    typeof x.uid === 'string' &&
+    typeof x.email === 'string' &&
     (typeof x.accessToken === 'string' || x.accessToken === null) &&
-    typeof x.email === 'string'
+    (x.tokenExpiry instanceof Date || x.tokenExpiry === null) &&
+    (typeof x.refreshToken === 'string' || x.refreshToken === null)
   ) {
     return true;
   } else {
@@ -40,6 +48,8 @@ export interface Playlist {
 
 export function isPlaylist(x: any): x is Playlist {
   if (
+    x &&
+    typeof x === 'object' &&
     typeof x.id === 'string' &&
     typeof x.name === 'string' &&
     typeof x.tracks === 'object' &&
@@ -61,4 +71,26 @@ export function isPlaylists(x: any): x is Playlist[] {
     }
   });
   return true;
+}
+
+export interface AccessTokenResponse {
+  access_token: string;
+  scope: string;
+  expires_in: number;
+  refresh_token: string;
+}
+
+export function isAccessTokenResponse(x: any): x is AccessTokenResponse {
+  if (
+    x &&
+    typeof x === 'object' &&
+    typeof x.access_token === 'string' &&
+    typeof x.scope === 'string' &&
+    typeof x.expires_in === 'number' &&
+    typeof x.refresh_token === 'string'
+  ) {
+    return true;
+  } else {
+    return false;
+  }
 }

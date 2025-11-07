@@ -1,14 +1,9 @@
 import * as t from './types';
 
-export const CLIENT_ID = process.env.SPOTIFY_API_CLIENT_ID || '';
-if (CLIENT_ID.length === 0) {
-  throw new Error('Please set SPOTIFY_API_CLIENT_ID');
-}
-
-export async function fetchProfile(token: string): Promise<t.UserProfile> {
+export async function fetchProfile(accessToken: string): Promise<t.UserProfile> {
   const result = await fetch('https://api.spotify.com/v1/me', {
     method: 'GET',
-    headers: { Authorization: `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${accessToken}` }
   }).then((res) => res.json());
 
   if (!t.isUserProfile(result)) {
