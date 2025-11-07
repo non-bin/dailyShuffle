@@ -7,9 +7,7 @@ export async function fetchProfile(accessToken: string): Promise<t.UserProfile> 
   }).then((res) => res.json());
 
   if (!t.isUserProfile(result)) {
-    console.error('Server response was not a UserProfile!', result);
-
-    throw new Error('Server response was not a UserProfile!');
+    throw new Error('Server response was not a UserProfile!', { cause: result });
   }
 
   return result;
@@ -33,7 +31,7 @@ export async function fetchUserPlaylists(token: string): Promise<t.Playlist[]> {
         break;
       }
     } else {
-      throw new Error('Server response was not a list of Playlists!');
+      throw new Error('Server response was not a list of Playlists!', { cause: result });
     }
   } while (next);
 
@@ -62,5 +60,5 @@ export async function createPlaylist(
     return result;
   }
 
-  throw new Error('No access_token!');
+  throw new Error('Server response was not a Playlist!', { cause: result });
 }

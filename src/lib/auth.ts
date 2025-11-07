@@ -63,6 +63,7 @@ export async function completeAuth(req: Bun.BunRequest) {
 
     return Response.json(profile);
   } catch (err) {
+    console.error((err as Error).cause);
     console.error(err);
 
     return new Response(Error.isError(err) ? `ERROR: ${err.message}` : 'UNKNOWN', { status: 500 });
@@ -109,7 +110,7 @@ async function getInitialAccessToken(verifier: string, code: string): Promise<t.
     return result;
   }
 
-  throw new Error('No access_token!');
+  throw new Error('Server response did not contain an accessToken!', { cause: result });
 }
 
 /**
@@ -156,5 +157,5 @@ async function refreshAccessToken(refreshToken: string): Promise<t.AccessTokenRe
     return result;
   }
 
-  throw new Error('No access_token!');
+  throw new Error('Server response did not contain an accessToken!', { cause: result });
 }
