@@ -4,6 +4,8 @@ import * as t from './types';
 
 const SCOPE = 'user-read-private user-read-email playlist-modify-public playlist-modify-private';
 
+const REDIRECT_URL = process.env.SPOTIFY_API_REDIRECT_URL || 'http://127.0.0.1:5173/callback';
+
 const CLIENT_ID = process.env.SPOTIFY_API_CLIENT_ID || '';
 if (CLIENT_ID.length === 0) {
   throw new Error('Please set SPOTIFY_API_CLIENT_ID');
@@ -25,7 +27,7 @@ export async function redirectToAuth(req: Bun.BunRequest) {
   const params = new URLSearchParams();
   params.append('client_id', CLIENT_ID);
   params.append('response_type', 'code');
-  params.append('redirect_uri', 'http://127.0.0.1:5173/callback');
+  params.append('redirect_uri', REDIRECT_URL);
   params.append('scope', SCOPE);
   params.append('code_challenge_method', 'S256');
   params.append('code_challenge', challenge);
