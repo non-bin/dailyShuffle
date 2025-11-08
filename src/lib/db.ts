@@ -96,7 +96,7 @@ export function getUserJobs(uid: string): t.Job[] {
 
   const out: t.Job[] = [];
 
-  res.forEach((job) => {
+  for (const job of res) {
     if (!job || typeof job !== 'object' || !('nextRun' in job) || typeof job.nextRun !== 'number')
       throw new TypeError('Invalid nextRun!');
     job.nextRun = new Date(job.nextRun);
@@ -104,7 +104,7 @@ export function getUserJobs(uid: string): t.Job[] {
     if (!t.isJob(job)) throw new TypeError('Not an instance of Job!', { cause: job });
 
     out.push(job);
-  });
+  }
 
   return out;
 }
@@ -116,7 +116,7 @@ export function getAllJobs(): t.Job[] {
 
   const out: t.Job[] = [];
 
-  res.forEach((job) => {
+  for (const job of res) {
     if (!job || typeof job !== 'object' || !('nextRun' in job) || typeof job.nextRun !== 'number')
       throw new TypeError('Invalid nextRun!');
     job.nextRun = new Date(job.nextRun);
@@ -124,7 +124,7 @@ export function getAllJobs(): t.Job[] {
     if (!t.isJob(job)) throw new TypeError('Not an instance of Job!', { cause: job });
 
     out.push(job);
-  });
+  }
 
   return out;
 }

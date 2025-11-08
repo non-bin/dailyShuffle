@@ -84,13 +84,13 @@ export async function fetchPlaylistTracks(accessToken: string, pid: string): Pro
     }).then((res) => res.json());
 
     if (result && typeof result === 'object' && 'items' in result && Array.isArray(result.items)) {
-      result.items.forEach((item: any) => {
+      for (const item of result) {
         if (!('track' in item) || !('uri' in item.track) || typeof item.track.uri !== 'string') {
           throw new Error('Server response was not a list of Playlists!', { cause: item });
         }
 
         items.push(item.track.uri);
-      });
+      }
 
       if ('next' in result && typeof result.next === 'string') {
         next = result.next;

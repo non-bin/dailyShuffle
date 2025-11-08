@@ -1,11 +1,11 @@
 export type bunServeHandler = Bun.Serve.Handler<Bun.BunRequest, Bun.Server<undefined>, Response>;
 
 export function isListOf<T>(x: any, typeGuard: (x: any) => x is T): x is T[] {
-  x.forEach((y: any) => {
+  for (const y of x) {
     if (!typeGuard(y)) {
       return false;
     }
-  });
+  }
   return true;
 }
 

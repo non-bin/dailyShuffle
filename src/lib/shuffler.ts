@@ -61,7 +61,7 @@ export async function runJob(job: t.Job) {
 
 export function runAllJobs() {
   const jobs = db.getAllJobs();
-  jobs.forEach(async (job) => {
+  for (const job of jobs) {
     try {
       await runJob(job);
     } catch (err) {
@@ -70,7 +70,7 @@ export function runAllJobs() {
       if (err instanceof Error) console.error('Cause:', err.cause);
       console.error(err);
     }
-  });
+  }
 }
 
 /**
