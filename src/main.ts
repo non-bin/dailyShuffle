@@ -20,6 +20,11 @@ const server = Bun.serve({
 
   fetch(req) {
     return new Response('Not Found', { status: 404 });
+  },
+
+  error(err) {
+    if (err instanceof Error) console.error('Cause:', err.cause);
+    console.error(err);
   }
 });
 
