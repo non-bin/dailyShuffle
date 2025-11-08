@@ -60,17 +60,31 @@ export async function runJob(job: t.Job) {
 }
 
 export async function runAllJobs() {
+let successes = 0;
+  let errors = 0;
+  const start = new Date();
+  console.log(`${start.toISOString()} - Running all jobs`);
+
   const jobs = db.getAllJobs();
-  for (const job of jobs) {
+  for await (const job of jobs) {
     try {
       await runJob(job);
+successes++;
     } catch (err) {
+errors++;
       console.error('Error while processing job:', job);
 
       if (err instanceof Error) console.error('Cause:', err.cause);
       console.error(err);
     }
   }
+
+  const end = new Date();
+  const duration = (end.getTime() - start.getTime()) / 1000;
+  if (duration > 2 * 60) console.error('Took more than 2 minutes!');
+  console.log(
+    `${end.toISOString()} - Finished running all jobs with ${successes} successes, and ${errors} errors. Took ${duration.toFixed()} seconds`
+  );
 }
 
 /**
