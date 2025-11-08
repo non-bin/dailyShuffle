@@ -27,7 +27,7 @@ export async function getAccessToken(uid: string, expiryWindowMinutes: number = 
 
     db.setUser(user);
 
-    return (await res).access_token;
+    return res.access_token;
   }
 
   throw new Error('Not authenticated!');
@@ -59,7 +59,7 @@ export async function runJob(job: t.Job) {
   await api.updatePlaylistTracks(accessToken, job.destinationPID, tracks);
 }
 
-export function runAllJobs() {
+export async function runAllJobs() {
   const jobs = db.getAllJobs();
   for (const job of jobs) {
     try {
