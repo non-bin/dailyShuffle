@@ -29,6 +29,8 @@ export interface User {
   accessToken?: string;
   accessTokenExpiry?: Date;
   refreshToken?: string;
+  sessionToken?: string;
+  sessionTokenExpiry?: Date;
 }
 
 export function isUser(x: any): x is User {
@@ -39,7 +41,9 @@ export function isUser(x: any): x is User {
     typeof x.email === 'string' &&
     (typeof x.accessToken === 'string' || x.accessToken === null) &&
     (x.accessTokenExpiry instanceof Date || x.accessTokenExpiry === null) &&
-    (typeof x.refreshToken === 'string' || x.refreshToken === null)
+    (typeof x.refreshToken === 'string' || x.refreshToken === null) &&
+    (typeof x.sessionToken === 'string' || x.sessionToken === null) &&
+    (x.sessionTokenExpiry instanceof Date || x.sessionTokenExpiry === null)
   ) {
     return true;
   } else {

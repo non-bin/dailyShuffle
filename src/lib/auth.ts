@@ -29,6 +29,9 @@ export function cleanVerifiers() {
   }
 }
 
+/**
+ * @param expiry Default is 15 minutes
+ */
 function addVerifier(verifier: string, expiry: Date = new Date(Date.now() + 15 * 60 * 1000)): number {
   for (let i = 0; i < verifiers.length; i++) {
     if (!verifiers[i]) {
@@ -89,19 +92,21 @@ export async function completeAuth(req: Bun.BunRequest) {
       return new Response('No code!', { status: 500 });
     }
 
-    const res = await getInitialAccessToken(verifier, code);
-
-    const profile = await api.fetchProfile(res.access_token);
+    const accessTokenResponse = await getInitialAccessToken(verifier, code);
+    const profile = await api.fetchProfile(accessTokenResponse.access_token);
+    const sessionToken = db.newSessionToken(req, profile.id);
 
     db.setUser({
       uid: profile.id,
       email: profile.email,
-      accessToken: res.access_token,
-      accessTokenExpiry: new Date(Date.now() + res.expires_in * 1000),
-      refreshToken: res.refresh_token
+      accessToken: accessTokenResponse.access_token,
+      accessTokenExpiry: new Date(Date.now() + accessTokenResponse.expires_in * 1000),
+      refreshToken: accessTokenResponse.refresh_token,
+      sessionToken,
+      sessionTokenExpiry: new Date(Date.now() + 6 * 60 * 60 * 1000) // 6h
     });
 
-    return Response.json(profile);
+    return Response.redirect('/');
   } catch (err) {
     if (err instanceof Error) console.error(err.cause);
     console.error(err);
@@ -154,39 +159,9 @@ async function getInitialAccessToken(verifier: string, code: string): Promise<t.
 }
 
 /**
- * Returns the access token from the db if it's still valid, otherwise gets a new one with {@link refreshAccessToken}
- */
-export async function getAccessToken(uid: string, expiryWindowMinutes: number = 5): Promise<string> {
-  const user = db.getUser(uid);
-  if (!user) throw new Error('Unknown uid!');
-
-  if (
-    user.accessToken &&
-    user.accessTokenExpiry &&
-    user.accessTokenExpiry > new Date(Date.now() + expiryWindowMinutes * 60000)
-  ) {
-    return user.accessToken;
-  }
-
-  if (user.refreshToken) {
-    const res = await refreshAccessToken(user.refreshToken);
-
-    user.accessToken = res.access_token;
-    user.accessTokenExpiry = new Date(Date.now() + res.expires_in * 1000);
-    user.refreshToken = res.refresh_token;
-
-    db.setUser(user);
-
-    return (await res).access_token;
-  }
-
-  throw new Error('Not authenticated!');
-}
-
-/**
  * Get a new access token using the refresh token from the last one
  */
-async function refreshAccessToken(refreshToken: string): Promise<t.AccessTokenResponse> {
+export async function refreshAccessToken(refreshToken: string): Promise<t.AccessTokenResponse> {
   const params = new URLSearchParams();
   params.append('grant_type', 'refresh_token');
   params.append('refresh_token', refreshToken);

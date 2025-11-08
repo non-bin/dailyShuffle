@@ -1,7 +1,4 @@
 import * as t from './types';
-import * as auth from './auth';
-import * as db from './db';
-import { shuffle } from './helpers';
 
 export async function fetchProfile(accessToken: string): Promise<t.UserProfile> {
   const result = await fetch('https://api.spotify.com/v1/me', {
@@ -87,7 +84,7 @@ export async function fetchPlaylistTracks(accessToken: string, pid: string): Pro
     }).then((res) => res.json());
 
     if (result && typeof result === 'object' && 'items' in result && Array.isArray(result.items)) {
-      result.items.forEach((item) => {
+      result.items.forEach((item: any) => {
         if (!('track' in item) || !('uri' in item.track) || typeof item.track.uri !== 'string') {
           throw new Error('Server response was not a list of Playlists!', { cause: item });
         }
@@ -141,25 +138,4 @@ export async function updatePlaylistTracks(accessToken: string, pid: string, tra
   }
 
   return snapshotId;
-}
-
-export async function runJob(job: t.Job) {
-  const accessToken = await auth.getAccessToken(job.uid);
-  const tracks = await fetchPlaylistTracks(accessToken, job.sourcePID);
-  shuffle(tracks);
-  await updatePlaylistTracks(accessToken, job.destinationPID, tracks);
-}
-
-export function runAllJobs() {
-  const jobs = db.getAllJobs();
-  jobs.forEach(async (job) => {
-    try {
-      await runJob(job);
-    } catch (err) {
-      console.error('Error while processing job:', job);
-
-      if (err instanceof Error) console.error('Cause:', err.cause);
-      console.error(err);
-    }
-  });
 }

@@ -9,7 +9,9 @@ db.query(
       email STRING NOT NULL,
       accessToken STRING,
       accessTokenExpiry INT,
-      refreshToken STRING
+      refreshToken STRING,
+      sessionToken STRING,
+      sessionTokenExpiry INT
     );
   `
 ).run();
@@ -27,19 +29,26 @@ db.query(
 
 export function setUser(user: t.User) {
   db.query(
-    'INSERT OR REPLACE INTO users (uid, email, accessToken, accessTokenExpiry, refreshToken) VALUES (?, ?, ?, ?, ?);'
+    'INSERT OR REPLACE INTO users (uid, email, accessToken, accessTokenExpiry, refreshToken, sessionToken, sessionTokenExpiry) VALUES (?, ?, ?, ?, ?, ?, ?);'
   ).run(
     user.uid,
     user.email,
     user.accessToken || null,
     user.accessTokenExpiry?.getTime() || null,
-    user.refreshToken || null
+    user.refreshToken || null,
+    user.sessionToken || null,
+    user.sessionTokenExpiry?.getTime() || null
   );
 }
 
+/**
+ * Hould not be used to get access token, use shuffler.getAccessToken instead
+ */
 export function getUser(uid: string): t.User | null {
   const res = db
-    .query('SELECT uid, email, accessToken, accessTokenExpiry, refreshToken FROM users WHERE uid = ?;')
+    .query(
+      'SELECT uid, email, accessToken, accessTokenExpiry, refreshToken, sessionToken, sessionTokenExpiry FROM users WHERE uid = ?;'
+    )
     .get(uid);
 
   if (!res || typeof res !== 'object') return null;
@@ -47,6 +56,9 @@ export function getUser(uid: string): t.User | null {
   if (!('accessTokenExpiry' in res) || typeof res.accessTokenExpiry !== 'number')
     throw new TypeError('Invalid accessTokenExpiry!');
   res.accessTokenExpiry = new Date(res.accessTokenExpiry);
+  if (!('sessionTokenExpiry' in res) || typeof res.sessionTokenExpiry !== 'number')
+    throw new TypeError('Invalid sessionTokenExpiry!');
+  res.sessionTokenExpiry = new Date(res.sessionTokenExpiry);
 
   if (!t.isUser(res)) throw new TypeError('Not an instance of User!', { cause: res });
 
@@ -115,4 +127,18 @@ export function getAllJobs(): t.Job[] {
   });
 
   return out;
+}
+
+async function updateSessionToken(uid: string, newSessionToken: string) {
+  db.query('UPDATE users SET sessionToken = ? WHERE uid = ?;').run(newSessionToken, uid);
+}
+
+export function newSessionToken(req: Bun.BunRequest, uid: string): string {
+  const sessionToken = crypto.randomUUID();
+  req.cookies.set('sessionToken', sessionToken, { maxAge: 6 * 60 * 60 }); // 6h
+  req.cookies.set('uid', uid, { maxAge: 6 * 60 * 60 }); // 6h
+
+  updateSessionToken(uid, sessionToken);
+
+  return sessionToken;
 }
