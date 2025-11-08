@@ -54,10 +54,10 @@ export function getUser(uid: string): t.User | null {
   if (!res || typeof res !== 'object') return null;
 
   if (!('accessTokenExpiry' in res) || typeof res.accessTokenExpiry !== 'number')
-    throw new TypeError('Invalid accessTokenExpiry!');
+    throw new TypeError('Invalid accessTokenExpiry!', { cause: res });
   res.accessTokenExpiry = new Date(res.accessTokenExpiry);
   if (!('sessionTokenExpiry' in res) || typeof res.sessionTokenExpiry !== 'number')
-    throw new TypeError('Invalid sessionTokenExpiry!');
+    throw new TypeError('Invalid sessionTokenExpiry!', { cause: res });
   res.sessionTokenExpiry = new Date(res.sessionTokenExpiry);
 
   if (!t.isUser(res)) throw new TypeError('Not an instance of User!', { cause: res });
@@ -81,7 +81,7 @@ export function getJob(destinationPID: string): t.Job | null {
 
   if (!res || typeof res !== 'object') return null;
 
-  if (!('nextRun' in res) || typeof res.nextRun !== 'number') throw new TypeError('Invalid nextRun!');
+  if (!('nextRun' in res) || typeof res.nextRun !== 'number') throw new TypeError('Invalid nextRun!', { cause: res });
   res.nextRun = new Date(res.nextRun);
 
   if (!t.isJob(res)) throw new TypeError('Not an instance of Job!', { cause: res });
@@ -98,7 +98,7 @@ export function getUserJobs(uid: string): t.Job[] {
 
   for (const job of res) {
     if (!job || typeof job !== 'object' || !('nextRun' in job) || typeof job.nextRun !== 'number')
-      throw new TypeError('Invalid nextRun!');
+      throw new TypeError('Invalid nextRun!', { cause: job });
     job.nextRun = new Date(job.nextRun);
 
     if (!t.isJob(job)) throw new TypeError('Not an instance of Job!', { cause: job });
@@ -118,7 +118,7 @@ export function getAllJobs(): t.Job[] {
 
   for (const job of res) {
     if (!job || typeof job !== 'object' || !('nextRun' in job) || typeof job.nextRun !== 'number')
-      throw new TypeError('Invalid nextRun!');
+      throw new TypeError('Invalid nextRun!', { cause: job });
     job.nextRun = new Date(job.nextRun);
 
     if (!t.isJob(job)) throw new TypeError('Not an instance of Job!', { cause: job });
