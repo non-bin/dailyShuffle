@@ -84,7 +84,7 @@ export async function fetchPlaylistTracks(accessToken: string, pid: string): Pro
     }).then((res) => res.json());
 
     if (result && typeof result === 'object' && 'items' in result && Array.isArray(result.items)) {
-      for (const item of result) {
+      for (const item of result.items) {
         if (!('track' in item) || !('uri' in item.track) || typeof item.track.uri !== 'string') {
           throw new Error('Server response was not a list of Playlists!', { cause: item });
         }
