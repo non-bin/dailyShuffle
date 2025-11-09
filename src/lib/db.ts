@@ -21,8 +21,7 @@ db.query(
     CREATE TABLE IF NOT EXISTS jobs (
       uid STRING REFERENCES users,
       sourcePID STRING,
-      destinationPID STRING PRIMARY KEY,
-      nextRun INT
+      destinationPID STRING PRIMARY KEY
     );
   `
 ).run();
@@ -66,23 +65,17 @@ export function getUser(uid: string): t.User | null {
 }
 
 export function setJob(job: t.Job) {
-  db.query('INSERT OR REPLACE INTO jobs (uid, destinationPID, sourcePID, nextRun) VALUES (?, ?, ?, ?);').run(
+  db.query('INSERT OR REPLACE INTO jobs (uid, destinationPID, sourcePID) VALUES (?, ?, ?);').run(
     job.uid,
     job.destinationPID,
-    job.sourcePID,
-    job.nextRun.getTime()
+    job.sourcePID
   );
 }
 
 export function getJob(destinationPID: string): t.Job | null {
-  const res = db
-    .query('SELECT uid, destinationPID, sourcePID, nextRun FROM jobs WHERE destinationPID = ?;')
-    .get(destinationPID);
+  const res = db.query('SELECT uid, destinationPID, sourcePID FROM jobs WHERE destinationPID = ?;').get(destinationPID);
 
   if (!res || typeof res !== 'object') return null;
-
-  if (!('nextRun' in res) || typeof res.nextRun !== 'number') throw new TypeError('Invalid nextRun!', { cause: res });
-  res.nextRun = new Date(res.nextRun);
 
   if (!t.isJob(res)) throw new TypeError('Not an instance of Job!', { cause: res });
 
@@ -90,17 +83,13 @@ export function getJob(destinationPID: string): t.Job | null {
 }
 
 export function getUserJobs(uid: string): t.Job[] {
-  const res = db.query('SELECT uid, destinationPID, sourcePID, nextRun FROM jobs WHERE uid = ?;').all(uid);
+  const res = db.query('SELECT uid, destinationPID, sourcePID FROM jobs WHERE uid = ?;').all(uid);
 
   if (!res || typeof res !== 'object') return [];
 
   const out: t.Job[] = [];
 
   for (const job of res) {
-    if (!job || typeof job !== 'object' || !('nextRun' in job) || typeof job.nextRun !== 'number')
-      throw new TypeError('Invalid nextRun!', { cause: job });
-    job.nextRun = new Date(job.nextRun);
-
     if (!t.isJob(job)) throw new TypeError('Not an instance of Job!', { cause: job });
 
     out.push(job);
@@ -110,17 +99,13 @@ export function getUserJobs(uid: string): t.Job[] {
 }
 
 export function getAllJobs(): t.Job[] {
-  const res = db.query('SELECT uid, destinationPID, sourcePID, nextRun FROM jobs;').all();
+  const res = db.query('SELECT uid, destinationPID, sourcePID FROM jobs;').all();
 
   if (!res || typeof res !== 'object') return [];
 
   const out: t.Job[] = [];
 
   for (const job of res) {
-    if (!job || typeof job !== 'object' || !('nextRun' in job) || typeof job.nextRun !== 'number')
-      throw new TypeError('Invalid nextRun!', { cause: job });
-    job.nextRun = new Date(job.nextRun);
-
     if (!t.isJob(job)) throw new TypeError('Not an instance of Job!', { cause: job });
 
     out.push(job);
