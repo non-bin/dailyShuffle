@@ -48,8 +48,8 @@ if (!newJobSave || !(newJobSave instanceof HTMLButtonElement))
 
 newJobDestinationName.value = '';
 
-const jobs: t.JobWithNames[] = [];
-let selectedJobId = 0;
+const jobs: { [destinationPID: string]: t.JobWithNames } = {};
+let selectedJobDestinationPID = '';
 let lastNewJobDestinationName = '';
 
 fetch('./userJobs')
@@ -70,7 +70,8 @@ fetch('./userJobs')
 
     for (const job of res) {
       if (t.isJobWithNames(job)) {
-        jobs.push(job);
+        selectedJobDestinationPID ||= job.destinationPID;
+        jobs[job.destinationPID] = job;
 
         const optionElement = document.createElement('option');
         optionElement.value = job.destinationPID;
@@ -81,17 +82,18 @@ fetch('./userJobs')
       }
     }
 
-    const selectedJob = jobs[selectedJobId];
+    const selectedJob = jobs[selectedJobDestinationPID];
     if (selectedJob) {
       editJobsDestination.options.namedItem('placeholder')!.remove();
-      editJobsDestination.disabled = false;
       editJobsDestination.value = selectedJob.destinationPID;
 
-      const optionElement = document.createElement('option');
-      optionElement.value = selectedJob.sourcePID;
-      optionElement.innerText = selectedJob.sourceName;
-      editJobsSource.appendChild(optionElement);
-    } else editJobsDelete.disabled = true;
+      updateEditJobsSource(selectedJob.sourcePID, selectedJob.sourceName);
+    } else {
+      editJobsDelete.disabled = true;
+      editJobsDestination.disabled = true;
+      editJobsSourceSearch.disabled = true;
+      fetchPlaylists();
+    }
 
     editJobsSource.disabled = true;
     editJobsSave.disabled = true;
@@ -105,7 +107,8 @@ fetch('./userJobs')
   });
 
 const fetchPlaylists = () => {
-  editJobsSource.parentElement!.classList.add('is-loading');
+  const selectedJob = jobs[selectedJobDestinationPID];
+  if (selectedJob) editJobsSource.parentElement!.classList.add('is-loading');
   newJobSource.parentElement!.classList.add('is-loading');
 
   fetch('./userPlaylists')
@@ -125,6 +128,7 @@ const fetchPlaylists = () => {
       }
 
       editJobsSource.innerHTML = '';
+      newJobSource.innerHTML = '';
 
       for (const playlist of res) {
         if (
@@ -143,17 +147,20 @@ const fetchPlaylists = () => {
         }
       }
 
-      editJobsSource.value = jobs[selectedJobId]?.sourcePID || '';
       updateNewJobDestinationName(newJobSource.selectedOptions[0]?.innerText);
+      if (selectedJob) updateEditJobsSource(selectedJob.sourcePID, selectedJob.sourceName);
+      else editJobsSource.value = '';
 
       newJobSource.disabled = false;
       newJobSave.disabled = false;
       newJobSave.title = '';
+      newJobSource.title = '';
 
-      if (jobs.length > 0) {
+      if (Object.keys(jobs).length > 0) {
         editJobsSource.disabled = false;
         editJobsSave.disabled = false;
         editJobsSave.title = '';
+        editJobsSource.title = '';
       }
 
       editJobsSource.parentElement!.classList.remove('is-loading');
@@ -168,14 +175,36 @@ const updateNewJobDestinationName = (sourceName?: string) => {
   }
 };
 
+const updateEditJobsSource = (sourcePID: string, sourceName: string) => {
+  let alreadyExists = false;
+
+  for (let i = 0; i < editJobsSource.options.length; i++) {
+    const option = editJobsSource.options.item(i);
+    if (option?.value == sourcePID) {
+      alreadyExists = true;
+      break;
+    }
+  }
+
+  if (!alreadyExists) {
+    const optionElement = document.createElement('option');
+    optionElement.value = sourcePID;
+    optionElement.innerText = sourceName;
+    editJobsSource.appendChild(optionElement);
+  }
+
+  editJobsSource.value = sourcePID;
+};
+
 editJobsSourceSearch.addEventListener('click', fetchPlaylists);
 newJobSourceSearch.addEventListener('click', fetchPlaylists);
 
-editJobsDestination.addEventListener('change', () => console.log('TODO'));
-newJobSource.addEventListener('change', (e) => {
-  if (e.target instanceof HTMLSelectElement) {
-    updateNewJobDestinationName(e.target.selectedOptions[0]?.innerText);
-    return;
-  }
-  throw new TypeError('Not a select element!', { cause: e });
+editJobsDestination.addEventListener('change', () => {
+  const newJobDestinationPID = editJobsDestination.selectedOptions[0]?.value;
+  if (newJobDestinationPID && Object.hasOwn(jobs, newJobDestinationPID)) {
+    selectedJobDestinationPID = newJobDestinationPID;
+    const job = jobs[selectedJobDestinationPID];
+    updateEditJobsSource(job!.sourcePID, job!.sourceName);
+  } else throw new Error('Unknown job!', { cause: { newJobDestinationPID, jobs } });
 });
+newJobSource.addEventListener('change', () => updateNewJobDestinationName(newJobSource.selectedOptions[0]?.innerText));
