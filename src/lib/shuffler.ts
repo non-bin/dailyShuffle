@@ -60,7 +60,7 @@ export async function runJob(job: t.Job) {
 }
 
 export async function runAllJobs() {
-let successes = 0;
+  let successes = 0;
   let errors = 0;
   const start = new Date();
   console.log(`${start.toISOString()} - Running all jobs`);
@@ -69,9 +69,9 @@ let successes = 0;
   for await (const job of jobs) {
     try {
       await runJob(job);
-successes++;
+      successes++;
     } catch (err) {
-errors++;
+      errors++;
       console.error('Error while processing job:', job);
 
       if (err instanceof Error) console.error('Cause:', err.cause);
@@ -124,12 +124,53 @@ export async function userPlaylists(uid: string | null): Promise<t.Playlist[] | 
   return null;
 }
 
-export async function userJobs(uid: string | null): Promise<t.Job[] | null> {
-  if (uid) return db.getUserJobs(uid);
+export async function userJobs(uid: string | null): Promise<t.JobWithNames[] | null> {
+  if (uid) {
+    const accessToken = await getAccessToken(uid);
+    const jobsWithNames: t.JobWithNames[] = [];
+    const jobs = db.getUserJobs(uid);
 
+    for (const job of jobs) {
+      const sourcePlaylist = api.fetchPlaylist(accessToken, job.sourcePID);
+      const destinationPlaylist = api.fetchPlaylist(accessToken, job.destinationPID);
+
+      jobsWithNames.push({
+        ...job,
+        sourceName: (await sourcePlaylist).name,
+        destinationName: (await destinationPlaylist).name
+      });
+    }
+
+    return jobsWithNames;
+  }
   return null;
 }
 
-export async function setJob(job: t.Job) {
+export async function updateJobSource(uid: string, destinationPID: string, sourcePID: string) {
+  const job = db.getJob(destinationPID);
+  if (!job) throw new Error('Job not found!', { cause: { destinationPID } });
+  if (job.uid !== uid) throw new Error('Wrong uid!', { cause: { job, uid } });
+
+  job.sourcePID = sourcePID;
   db.setJob(job);
+  runJob(job);
+}
+
+export async function createJob(uid: string, sourcePID: string, destinationName: string) {
+  const job = {
+    destinationPID: (await api.createPlaylist(await getAccessToken(uid), uid, destinationName)).id,
+    sourcePID,
+    uid
+  };
+
+  db.setJob(job);
+  runJob(job);
+}
+
+export async function deleteJob(uid: string, destinationPID: string) {
+  const job = db.getJob(destinationPID);
+  if (!job) throw new Error('Job not found!', { cause: { destinationPID } });
+  if (job.uid !== uid) throw new Error('Wrong uid!', { cause: { job, uid } });
+
+  db.deleteJob(job.destinationPID);
 }

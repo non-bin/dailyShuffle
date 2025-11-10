@@ -118,3 +118,22 @@ export function isJob(x: any): x is Job {
     return false;
   }
 }
+
+export interface JobWithNames extends Job {
+  sourceName: string;
+  destinationName: string;
+}
+
+export function isJobWithNames(x: any): x is JobWithNames {
+  if (
+    isJob(x) &&
+    'sourceName' in x &&
+    typeof x.sourceName === 'string' &&
+    'destinationName' in x &&
+    typeof x.destinationName === 'string'
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+}

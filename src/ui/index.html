@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daily Shuffle</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <section class="section">
+      <div class="container">
+        <!-- Titles -->
+        <h1 class="title">Daily Shuffle</h1>
+        <p class="subtitle">Welcome<strong id="userName"></strong>!</p>
+
+        <!-- Boxes -->
+        <div class="columns">
+          <!-- Edit Jobs -->
+          <div class="column" id="editJobs">
+            <form action="/" method="post" class="box">
+              <!-- Title -->
+              <h2 class="title is-4">Edit Jobs</h2>
+
+              <!-- Destination -->
+              <div class="field">
+                <label class="label">Destination Playlist</label>
+                <div class="control is-expanded">
+                  <div class="select is-fullwidth">
+                    <select class="is-skeleton" id="editJobsDestination" name="destination" disabled required>
+                      <option id="placeholder">You don't have any jobs yet, try making one!</option>
+                    </select>
+                  </div>
+                </div>
+                <p class="help">Identifies a job</p>
+              </div>
+
+              <!-- Source -->
+              <label class="label">Source Playlist</label>
+              <div class="field has-addons">
+                <div class="control is-expanded">
+                  <div class="select is-fullwidth">
+                    <select class="is-skeleton" id="editJobsSource" name="source" required></select>
+                  </div>
+                </div>
+                <div class="control">
+                  <button class="button is-info is-skeleton" id="editJobsSourceSearch" type="button">Search</button>
+                </div>
+              </div>
+
+              <!-- Buttons -->
+              <div class="field is-grouped">
+                <div class="control">
+                  <button
+                    class="button is-primary is-skeleton"
+                    id="editJobsSave"
+                    type="submit"
+                    name="action"
+                    value="update"
+                    title="You must search for source playlists first">
+                    Save
+                  </button>
+                </div>
+                <div class="control">
+                  <button
+                    class="button is-danger is-skeleton"
+                    id="editJobsDelete"
+                    type="submit"
+                    name="action"
+                    value="delete"
+                    title="Only removes shuffle job, leaves destination playlist intact">
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <!-- New Job -->
+          <div class="column" id="newJob">
+            <form action="/" method="post" class="box">
+              <!-- Title -->
+              <h2 class="title is-4">Add a New Job</h2>
+
+              <!-- Source -->
+              <label class="label">Source Playlist</label>
+              <div class="field has-addons">
+                <div class="control is-expanded">
+                  <div class="select is-fullwidth">
+                    <select class="is-skeleton" id="newJobSource" name="source" required></select>
+                  </div>
+                </div>
+                <div class="control">
+                  <button class="button is-info is-skeleton" id="newJobSourceSearch" type="button">Search</button>
+                </div>
+              </div>
+
+              <!-- Destination -->
+              <div class="field">
+                <label class="label">New Playlist Name</label>
+                <input
+                  class="input is-skeleton"
+                  id="newJobDestinationName"
+                  type="text"
+                  name="destination"
+                  value=""
+                  required />
+                <p class="help">Can be changed later from the Spotify app</p>
+              </div>
+
+              <!-- Buttons -->
+              <div class="field">
+                <div class="control">
+                  <button
+                    class="button is-primary is-skeleton"
+                    id="newJobSave"
+                    type="submit"
+                    name="action"
+                    value="add"
+                    title="You must search for source playlists first">
+                    Save
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </body>
+  <script src="main.js"></script>
+</html>

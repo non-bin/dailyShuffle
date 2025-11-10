@@ -72,6 +72,12 @@ export function setJob(job: t.Job) {
   );
 }
 
+export function deleteJob(destinationPID: string) {
+  const res = db.query('DELETE FROM jobs WHERE destinationPID = ? RETURNING destinationPID;').run(destinationPID);
+  if (res.changes > 1) throw new Error('Invalid response!', { cause: { res, destinationPID } });
+  if (res.changes < 1) throw new Error('No such job!', { cause: { res, destinationPID } });
+}
+
 export function getJob(destinationPID: string): t.Job | null {
   const res = db.query('SELECT uid, destinationPID, sourcePID FROM jobs WHERE destinationPID = ?;').get(destinationPID);
 
