@@ -8,18 +8,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## TODO
 
 - UI
+  - Logout
+  - Error modal
+  - Auto search when no jobs
+  - Refresh without post data
+  - Allow using existing playlists as destinations
+  - Allow using albums or other user's playlists as sources
+- Check or handle source=dest
+- Access token
+  - Only refresh every 30m
+  - Accept previous access token for a few minutes after refresh
 - Save snapshot ids
   - Revert on error
+- Handle deleted source/destination (or invalid on create/update)
+- Handle removed auth
 - Handle rate limits
-- Update or remove the last run db value
 
 ## [Unreleased]
 
 ### Added
 
+- WebUI
 - API authentication
 - Database
-- Helper functions ready for a UI
-- Basic functionality
+- Automatic shuffling
 
 [unreleased]: https://github.com/non-bin/dailyShuffle
