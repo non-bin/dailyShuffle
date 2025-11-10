@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow specifying run frequency
 - Fix release bins
 - Log function
+- Specify time to run all jobs
 
 ## [Unreleased]
 

@@ -133,7 +133,7 @@ export async function userPlaylists(uid: string | null): Promise<t.Playlist[] | 
   return null;
 }
 
-export async function userJobs(uid: string | null): Promise<t.JobWithNames[] | null> {
+export async function userJobs(uid: string | null): Promise<{ email?: string; jobs: t.JobWithNames[] } | null> {
   if (uid) {
     const accessToken = await getAccessToken(uid);
     const jobsWithNames: t.JobWithNames[] = [];
@@ -150,7 +150,7 @@ export async function userJobs(uid: string | null): Promise<t.JobWithNames[] | n
       });
     }
 
-    return jobsWithNames;
+    return { email: db.getUser(uid)?.email, jobs: jobsWithNames };
   }
   return null;
 }

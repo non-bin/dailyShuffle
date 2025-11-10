@@ -9,6 +9,14 @@
 
 import * as t from '../lib/types';
 
+const userNameElement = document.getElementById('userName');
+if (!userNameElement || !(userNameElement instanceof HTMLElement))
+  throw TypeError('userName element not found', { cause: userNameElement });
+
+const logoutElement = document.getElementById('logout');
+if (!logoutElement || !(logoutElement instanceof HTMLElement))
+  throw TypeError('logout element not found', { cause: userNameElement });
+
 // Edit
 const editJobsContainer = document.getElementById('editJobs');
 if (!editJobsContainer || !(editJobsContainer instanceof HTMLDivElement))
@@ -77,11 +85,11 @@ fetch('./userJobs')
     return res.json();
   })
   .then((res) => {
-    if (!Array.isArray(res)) {
-      throw new Error('Response was not an array!', { cause: res });
+    if (!(res && typeof res === 'object' && 'jobs' in res && Array.isArray(res.jobs))) {
+      throw new Error('Invalid response!', { cause: res });
     }
 
-    for (const job of res) {
+    for (const job of res.jobs) {
       if (t.isJobWithNames(job)) {
         selectedJobDestinationPID ||= job.destinationPID;
         jobs[job.destinationPID] = job;
@@ -108,6 +116,9 @@ fetch('./userJobs')
       editJobsSourceSearch.disabled = true;
       fetchPlaylists();
     }
+
+    if (res.email) userNameElement.innerText = ' ' + res.email;
+    logoutElement.style.display = 'unset';
 
     // If they are disabled and skeletons they look weird
     editJobsSource.disabled = true;
@@ -217,6 +228,11 @@ const updateEditJobsSource = (sourcePID: string, sourceName: string) => {
 editJobsSourceSearch.addEventListener('click', () => fetchPlaylists());
 newJobSourceSearch.addEventListener('click', () => fetchPlaylists());
 newJobSource.addEventListener('change', () => updateNewJobDestinationName());
+logoutElement.addEventListener('click', async () => {
+  await cookieStore.delete('uid');
+  await cookieStore.delete('sessionToken');
+  window.location.pathname = '/';
+});
 editJobsDestination.addEventListener('change', () => {
   const newJobDestinationPID = editJobsDestination.selectedOptions[0]?.value;
   if (newJobDestinationPID && Object.hasOwn(jobs, newJobDestinationPID)) {
