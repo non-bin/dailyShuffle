@@ -72,11 +72,13 @@ const server = Bun.serve({
       return auth.completeAuth(req);
     },
 
-    '/style.css': new Response(await Bun.file('./src/ui/style.css').bytes(), {
+    '/style.css': async (req) => {
+      return new Response(await Bun.file('./src/ui/style.css').bytes(), {
       headers: {
         'Content-Type': 'text/css'
       }
-    }),
+      });
+    },
 
     '/main.js': async () => {
       return new Response((await Bun.build({ entrypoints: ['src/ui/main.ts'] })).outputs[0], {

@@ -85,11 +85,11 @@ export async function fetchPlaylistTracks(accessToken: string, pid: string): Pro
 
     if (result && typeof result === 'object' && 'items' in result && Array.isArray(result.items)) {
       for (const item of result.items) {
-        if (!('track' in item) || !('uri' in item.track) || typeof item.track.uri !== 'string') {
-          throw new Error('Server response was not a list of Playlists!', { cause: item });
-        }
-
-        items.push(item.track.uri);
+        if ('track' in item) {
+          if (item.track && typeof item.track === 'object' && 'uri' in item.track && typeof item.track.uri === 'string')
+            items.push(item.track.uri);
+          else console.error(`Invalid track in ${pid}, ignoring`, item);
+        } else throw new Error('Server response was not a list of Playlists!', { cause: item });
       }
 
       if ('next' in result && typeof result.next === 'string') {
