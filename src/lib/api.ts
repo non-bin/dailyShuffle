@@ -1,6 +1,18 @@
+/**
+ * Daily Shuffle - lib/api.ts
+ * Interacts with the Spotify API for everything except authentication (see lib/auth.ts for that)
+ *
+ * Copyright (C) 2025  Alice Jacka, licensed under AGPL 3.0
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import * as t from './types';
 
-export async function fetchProfile(accessToken: string): Promise<t.UserProfile> {
+/** Users are limited to 11000 playlists, and 11000 tracks in each https://developer.spotify.com/documentation/web-api/reference/create-playlist */
+const MAX_LOOPS = 300;
+
+export async function fetchUserProfile(accessToken: string): Promise<t.UserProfile> {
   const result = await fetch('https://api.spotify.com/v1/me', {
     method: 'GET',
     headers: { Authorization: `Bearer ${accessToken}` }
@@ -15,8 +27,10 @@ export async function fetchProfile(accessToken: string): Promise<t.UserProfile> 
 
 export async function fetchUserPlaylists(accessToken: string): Promise<t.Playlist[]> {
   let items: t.Playlist[] = [];
+
+  // Fetch the first 50 from this endpoint
   let next = 'https://api.spotify.com/v1/me/playlists?limit=50';
-  do {
+  for (let i = 0; i < MAX_LOOPS; i++) {
     const result = await fetch(next, {
       method: 'GET',
       headers: { Authorization: `Bearer ${accessToken}` }
@@ -26,16 +40,17 @@ export async function fetchUserPlaylists(accessToken: string): Promise<t.Playlis
       items = items.concat(result.items);
 
       if ('next' in result && typeof result.next === 'string') {
+        // Then get the next page using the endpoint provided in the response
         next = result.next;
       } else {
-        break;
+        return items;
       }
     } else {
       throw new Error('Server response was not a list of Playlists!', { cause: result });
     }
-  } while (next);
+  }
 
-  return items;
+  throw new Error(`Looped more than ${MAX_LOOPS} times!`, { cause: items });
 }
 
 export async function createPlaylist(
@@ -77,7 +92,7 @@ export async function fetchPlaylist(accessToken: string, pid: string): Promise<t
 export async function fetchPlaylistTracks(accessToken: string, pid: string): Promise<string[]> {
   let items: string[] = [];
   let next = `https://api.spotify.com/v1/playlists/${pid}/tracks?limit=50&fields=next,items(track(uri))`;
-  do {
+  for (let i = 0; i < MAX_LOOPS; i++) {
     const result = await fetch(next, {
       method: 'GET',
       headers: { Authorization: `Bearer ${accessToken}` }
@@ -95,14 +110,14 @@ export async function fetchPlaylistTracks(accessToken: string, pid: string): Pro
       if ('next' in result && typeof result.next === 'string') {
         next = result.next;
       } else {
-        break;
+        return items;
       }
     } else {
       throw new Error('Server response was not a list of Playlists!', { cause: result });
     }
-  } while (next);
+  }
 
-  return items;
+  throw new Error(`Looped more than ${MAX_LOOPS} times!`, { cause: items });
 }
 
 /**

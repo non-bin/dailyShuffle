@@ -1,4 +1,11 @@
-export type bunServeHandler = Bun.Serve.Handler<Bun.BunRequest, Bun.Server<undefined>, Response>;
+/**
+ * Daily Shuffle - lib/types.ts
+ * TypeScript object type definitions
+ *
+ * Copyright (C) 2025  Alice Jacka, licensed under AGPL 3.0
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
 export function isListOf<T>(x: any, typeGuard: (x: any) => x is T): x is T[] {
   for (const y of x) {

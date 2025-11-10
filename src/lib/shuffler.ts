@@ -1,3 +1,12 @@
+/**
+ * Daily Shuffle - lib/shuffler.ts
+ * Wrappers around methods in other files, to give a consistent api to `main.ts`
+ *
+ * Copyright (C) 2025  Alice Jacka, licensed under AGPL 3.0
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import * as t from './types';
 import * as auth from './auth';
 import * as api from './api';
@@ -90,7 +99,7 @@ export async function runAllJobs() {
 /**
  * @returns uid
  */
-export async function checkSessionToken(req: Bun.BunRequest): Promise<string | null> {
+export function checkSessionToken(req: Bun.BunRequest): string | null {
   const sessionToken = req.cookies.get('sessionToken');
   const uid = req.cookies.get('uid');
 
@@ -146,7 +155,7 @@ export async function userJobs(uid: string | null): Promise<t.JobWithNames[] | n
   return null;
 }
 
-export async function updateJobSource(uid: string, destinationPID: string, sourcePID: string) {
+export function updateJobSource(uid: string, destinationPID: string, sourcePID: string) {
   const job = db.getJob(destinationPID);
   if (!job) throw new Error('Job not found!', { cause: { destinationPID } });
   if (job.uid !== uid) throw new Error('Wrong uid!', { cause: { job, uid } });
@@ -167,7 +176,7 @@ export async function createJob(uid: string, sourcePID: string, destinationName:
   runJob(job);
 }
 
-export async function deleteJob(uid: string, destinationPID: string) {
+export function deleteJob(uid: string, destinationPID: string) {
   const job = db.getJob(destinationPID);
   if (!job) throw new Error('Job not found!', { cause: { destinationPID } });
   if (job.uid !== uid) throw new Error('Wrong uid!', { cause: { job, uid } });

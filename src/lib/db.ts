@@ -1,3 +1,12 @@
+/**
+ * Daily Shuffle - lib/db.ts
+ * Stores and interacts with persistent data like users and jobs
+ *
+ * Copyright (C) 2025  Alice Jacka, licensed under AGPL 3.0
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import { Database } from 'bun:sqlite';
 import * as t from './types';
 
@@ -40,9 +49,6 @@ export function setUser(user: t.User) {
   );
 }
 
-/**
- * Hould not be used to get access token, use shuffler.getAccessToken instead
- */
 export function getUser(uid: string): t.User | null {
   const res = db
     .query(
@@ -120,7 +126,7 @@ export function getAllJobs(): t.Job[] {
   return out;
 }
 
-async function updateSessionToken(uid: string, newSessionToken: string) {
+function updateSessionToken(uid: string, newSessionToken: string) {
   db.query('UPDATE users SET sessionToken = ? WHERE uid = ?;').run(newSessionToken, uid);
 }
 

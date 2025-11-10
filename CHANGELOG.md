@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Refresh without post data
   - Allow using existing playlists as destinations
   - Allow using albums or other user's playlists as sources
+  - User name
 - Check or handle source=dest
 - Access token
   - Only refresh every 30m
@@ -23,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Handle deleted source/destination (or invalid on create/update)
 - Handle removed auth
 - Handle rate limits
+- Allow specifying run frequency
+- Fix release bins
+- Log function
 
 ## [Unreleased]
 

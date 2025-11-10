@@ -1,3 +1,12 @@
+/**
+ * Daily Shuffle - main.ts
+ * The entry point, runs the WebUI server and schedules jobs. Calls helpers from `lib/shuffler.ts`
+ *
+ * Copyright (C) 2025  Alice Jacka, licensed under AGPL 3.0
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import * as auth from './lib/auth';
 import * as s from './lib/shuffler';
 
@@ -9,7 +18,7 @@ const server = Bun.serve({
   port: PORT,
   routes: {
     '/': async (req) => {
-      const uid = await s.checkSessionToken(req);
+      const uid = s.checkSessionToken(req);
       if (uid) {
         if (req.method === 'POST') {
           const body = await req.formData();
@@ -25,13 +34,13 @@ const server = Bun.serve({
             return Response.json({ message: 'Invalid or missing destination!', body }, { status: 400 });
 
           if (action === 'delete') {
-            await s.deleteJob(uid, destination);
+            s.deleteJob(uid, destination);
           } else {
             if (!source || typeof source !== 'string')
               return Response.json({ message: 'Invalid or missing source!', body }, { status: 400 });
 
             if (action === 'update') {
-              await s.updateJobSource(uid, destination, source);
+              s.updateJobSource(uid, destination, source);
             } else if (action === 'add') {
               await s.createJob(uid, source, destination);
             } else return Response.json({ message: 'Invalid action!', body }, { status: 400 });
@@ -49,7 +58,7 @@ const server = Bun.serve({
     },
 
     '/userPlaylists': async (req) => {
-      const uid = await s.checkSessionToken(req);
+      const uid = s.checkSessionToken(req);
       const res = await s.userPlaylists(uid);
       if (res) return Response.json(res);
 
@@ -57,7 +66,7 @@ const server = Bun.serve({
     },
 
     '/userJobs': async (req) => {
-      const uid = await s.checkSessionToken(req);
+      const uid = s.checkSessionToken(req);
       const res = await s.userJobs(uid);
       if (res) return Response.json(res);
 
@@ -70,14 +79,6 @@ const server = Bun.serve({
 
     '/callback': (req) => {
       return auth.completeAuth(req);
-    },
-
-    '/style.css': async (req) => {
-      return new Response(await Bun.file('./src/ui/style.css').bytes(), {
-      headers: {
-        'Content-Type': 'text/css'
-      }
-      });
     },
 
     '/main.js': async () => {

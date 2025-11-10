@@ -1,3 +1,12 @@
+/**
+ * Daily Shuffle - ui/main.ts
+ * UI scripts, transpiled to js by `src/main.ts`
+ *
+ * Copyright (C) 2025  Alice Jacka, licensed under AGPL 3.0
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import * as t from '../lib/types';
 
 // Edit
@@ -46,12 +55,16 @@ const newJobSave = document.getElementById('newJobSave');
 if (!newJobSave || !(newJobSave instanceof HTMLButtonElement))
   throw TypeError('newJobSave element not found', { cause: newJobSave });
 
+// Clear any prefill
 newJobDestinationName.value = '';
 
 const jobs: { [destinationPID: string]: t.JobWithNames } = {};
+/** Index into jobs */
 let selectedJobDestinationPID = '';
+/** Compared to input value before changing */
 let lastNewJobDestinationName = '';
 
+// Load jobs for editing
 fetch('./userJobs')
   .then((res) => {
     if (!res.ok) {
@@ -89,12 +102,14 @@ fetch('./userJobs')
 
       updateEditJobsSource(selectedJob.sourcePID, selectedJob.sourceName);
     } else {
+      // No jobs
       editJobsDelete.disabled = true;
       editJobsDestination.disabled = true;
       editJobsSourceSearch.disabled = true;
       fetchPlaylists();
     }
 
+    // If they are disabled and skeletons they look weird
     editJobsSource.disabled = true;
     editJobsSave.disabled = true;
     newJobSource.disabled = true;
@@ -106,6 +121,7 @@ fetch('./userJobs')
     }
   });
 
+/** Called by the search buttons */
 const fetchPlaylists = () => {
   const selectedJob = jobs[selectedJobDestinationPID];
   if (selectedJob) editJobsSource.parentElement!.classList.add('is-loading');
@@ -147,7 +163,7 @@ const fetchPlaylists = () => {
         }
       }
 
-      updateNewJobDestinationName(newJobSource.selectedOptions[0]?.innerText);
+      updateNewJobDestinationName();
       if (selectedJob) updateEditJobsSource(selectedJob.sourcePID, selectedJob.sourceName);
       else editJobsSource.value = '';
 
@@ -156,6 +172,7 @@ const fetchPlaylists = () => {
       newJobSave.title = '';
       newJobSource.title = '';
 
+      // Keep edit pane disabled if there are no jobs
       if (Object.keys(jobs).length > 0) {
         editJobsSource.disabled = false;
         editJobsSave.disabled = false;
@@ -169,6 +186,7 @@ const fetchPlaylists = () => {
 };
 
 const updateNewJobDestinationName = (sourceName?: string) => {
+  sourceName ||= newJobSource.selectedOptions[0]?.innerText;
   if (sourceName && (newJobDestinationName.value === '' || newJobDestinationName.value === lastNewJobDestinationName)) {
     lastNewJobDestinationName = `Daily Shuffle of ${sourceName}`;
     newJobDestinationName.value = lastNewJobDestinationName;
@@ -196,9 +214,9 @@ const updateEditJobsSource = (sourcePID: string, sourceName: string) => {
   editJobsSource.value = sourcePID;
 };
 
-editJobsSourceSearch.addEventListener('click', fetchPlaylists);
-newJobSourceSearch.addEventListener('click', fetchPlaylists);
-
+editJobsSourceSearch.addEventListener('click', () => fetchPlaylists());
+newJobSourceSearch.addEventListener('click', () => fetchPlaylists());
+newJobSource.addEventListener('change', () => updateNewJobDestinationName());
 editJobsDestination.addEventListener('change', () => {
   const newJobDestinationPID = editJobsDestination.selectedOptions[0]?.value;
   if (newJobDestinationPID && Object.hasOwn(jobs, newJobDestinationPID)) {
@@ -207,4 +225,3 @@ editJobsDestination.addEventListener('change', () => {
     updateEditJobsSource(job!.sourcePID, job!.sourceName);
   } else throw new Error('Unknown job!', { cause: { newJobDestinationPID, jobs } });
 });
-newJobSource.addEventListener('change', () => updateNewJobDestinationName(newJobSource.selectedOptions[0]?.innerText));

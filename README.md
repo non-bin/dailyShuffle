@@ -19,6 +19,23 @@ DAILYSHUFFLE_REDIRECT_URL=http://127.0.0.1:8080/callback
 
 Then just run the server with `bun dev`
 
+## Contributing
+
+### Files
+
+In the `src` directory:
+
+- main.ts - The entry point, runs the WebUI server and schedules jobs. Calls helpers from `/lib/shuffler.ts`
+- lib/
+  - types.ts - TypeScript object type definitions
+  - shuffler.ts - Wrappers around methods in other files, to give a consistent api to `/main.ts`
+  - api.ts - Interacts with the Spotify API for everything but authentication
+  - auth.ts - Handles authentication with the Spotify API
+  - db.ts - Stores and interacts with persistent data like users and jobs
+- ui/
+  - index.html - Single page interface, using the [Bulma](https://bulma.io/documentation) CSS framework
+  - main.ts - Transpiled to js by `/main.ts`
+
 ## License
 
 ```plain

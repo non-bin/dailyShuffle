@@ -1,11 +1,21 @@
+/**
+ * Daily Shuffle - lib/auth.ts
+ * Handle authentication with the Spotify API
+ *
+ * Copyright (C) 2025  Alice Jacka, licensed under AGPL 3.0
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import * as api from './api';
 import * as db from './db';
 import * as t from './types';
 
+/** Permissions to request from the Spotify API */
 const SCOPE = 'user-read-private user-read-email playlist-modify-public playlist-modify-private';
 
+// Env vars
 const REDIRECT_URL = process.env.DAILYSHUFFLE_REDIRECT_URL || 'http://127.0.0.1:8080/callback';
-
 const CLIENT_ID = process.env.DAILYSHUFFLE_CLIENT_ID || '';
 if (CLIENT_ID.length === 0) {
   throw new Error('Please set DAILYSHUFFLE_CLIENT_ID');
@@ -14,10 +24,13 @@ const CLIENT_SECRET = process.env.DAILYSHUFFLE_CLIENT_SECRET || '';
 if (CLIENT_SECRET.length === 0) {
   throw new Error('Please set DAILYSHUFFLE_CLIENT_SECRET');
 }
+
 const AUTHORIZATION = 'Basic ' + Buffer.from(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64');
 
+/** Stores nonces used to auth with the Spotify API */
 let verifiers: ({ verifier: string; expiry: Date } | null)[] = [];
 
+/** Remove expired nonces */
 export function cleanVerifiers() {
   const now = new Date();
 
@@ -93,7 +106,7 @@ export async function completeAuth(req: Bun.BunRequest) {
     }
 
     const accessTokenResponse = await getInitialAccessToken(verifier, code);
-    const profile = await api.fetchProfile(accessTokenResponse.access_token);
+    const profile = await api.fetchUserProfile(accessTokenResponse.access_token);
     const sessionToken = db.newSessionToken(req, profile.id);
 
     db.setUser({
@@ -115,6 +128,7 @@ export async function completeAuth(req: Bun.BunRequest) {
   }
 }
 
+/** Used as a nonce during Spotify API authentication */
 function randomString(length: number) {
   let text = '';
   let possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
