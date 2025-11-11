@@ -2,9 +2,9 @@
 
 Create shuffled versions of your Spotify playlists, refreshed every day
 
-## How to Run
+## Configuration
 
-Create a `.env` file in the root of the repo, using the following template:
+Create a `.env` file in the directory you will run Daily Shuffle from, using the following template:
 
 ```ini
 # Required
@@ -17,11 +17,22 @@ DAILYSHUFFLE_PORT=8080
 DAILYSHUFFLE_REDIRECT_URL=http://127.0.0.1:8080/callback
 ```
 
-Then just run the server with `bun dev`
+This project is written using the [Bun](https://bun.com/) runtime, it will not work with another runtime like NodeJS.
+
+### Running
+
+Create a `.env` file as described in [Configuration](#configuration)
+
+```shell
+bun i -d # Install dev dependencies, or:
+bun i -p # Install production dependencies
+
+bun dev # Start the dev server
+```
 
 ## Contributing
 
-### Files
+### File Layout
 
 In the `src` directory:
 
