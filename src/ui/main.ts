@@ -63,8 +63,8 @@ const newJobSave = document.getElementById('newJobSave');
 if (!newJobSave || !(newJobSave instanceof HTMLButtonElement))
   throw TypeError('newJobSave element not found', { cause: newJobSave });
 
-// Clear any prefill
-newJobDestinationName.value = '';
+newJobDestinationName.value = ''; // Clear any prefill
+if (window.history.replaceState) window.history.replaceState(null, '', window.location.href); // Don't resubmit form data on reload
 
 const jobs: { [destinationPID: string]: t.JobWithNames } = {};
 /** Index into jobs */
