@@ -129,18 +129,19 @@ export function getAllJobs(): t.Job[] {
   return out;
 }
 
-function updateSessionToken(uid: string, newSessionToken: string) {
+function updateSessionToken(uid: string, newSessionToken: string, expires: Date) {
   db.query(
-    'UPDATE users SET sessionTokenOld = CASE WHEN sessionTokenExpiry > unixepoch("now")*1000 THEN sessionToken END, sessionToken = ? WHERE uid = ?;'
-  ).run(newSessionToken, uid);
+    'UPDATE users SET sessionTokenOld = CASE WHEN sessionTokenExpiry > unixepoch("now")*1000 THEN sessionToken END, sessionToken = ?, sessionTokenExpiry = ? WHERE uid = ?;'
+  ).run(newSessionToken, expires.getTime(), uid);
 }
 
 export function newSessionToken(req: Bun.BunRequest, uid: string): string {
   const sessionToken = crypto.randomUUID();
-  req.cookies.set('sessionToken', sessionToken, { maxAge: 6 * 60 * 60 }); // 6h
-  req.cookies.set('uid', uid, { maxAge: 6 * 60 * 60 }); // 6h
+  const expires = new Date(Date.now() + 6 * 60 * 60);
+  req.cookies.set('sessionToken', sessionToken, { expires }); // 6h
+  req.cookies.set('uid', uid, { expires }); // 6h
 
-  updateSessionToken(uid, sessionToken);
+  updateSessionToken(uid, sessionToken, expires);
 
   return sessionToken;
 }
