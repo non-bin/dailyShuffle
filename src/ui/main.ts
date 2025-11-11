@@ -229,9 +229,7 @@ editJobsSourceSearch.addEventListener('click', () => fetchPlaylists());
 newJobSourceSearch.addEventListener('click', () => fetchPlaylists());
 newJobSource.addEventListener('change', () => updateNewJobDestinationName());
 logoutElement.addEventListener('click', async () => {
-  await cookieStore.delete('uid');
-  await cookieStore.delete('sessionToken');
-  window.location.pathname = '/';
+  window.location.pathname = '/logout';
 });
 editJobsDestination.addEventListener('change', () => {
   const newJobDestinationPID = editJobsDestination.selectedOptions[0]?.value;

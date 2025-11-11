@@ -201,3 +201,7 @@ export function deleteJob(uid: string, destinationPID: string) {
 
   db.deleteJob(job.destinationPID);
 }
+
+export function logout(uid: string) {
+  db.removeSessionTokens(uid);
+}

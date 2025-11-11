@@ -145,3 +145,7 @@ export function newSessionToken(req: Bun.BunRequest, uid: string): string {
 
   return sessionToken;
 }
+
+export function removeSessionTokens(uid: string) {
+  db.query('UPDATE users SET sessionTokenOld = "", sessionToken = "", sessionTokenExpiry = 0 WHERE uid = ?;').run(uid);
+}
