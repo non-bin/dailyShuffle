@@ -8,13 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## TODO
 
 - UI
-  - Logout
   - Error modal
-  - Auto search when no jobs
   - Refresh without post data
   - Allow using existing playlists as destinations
   - Allow using albums or other user's playlists as sources
-  - User name
 - Check or handle source=dest
 - Access token
   - Only refresh every 30m
@@ -25,8 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Handle removed auth
 - Handle rate limits
 - Allow specifying run frequency
-- Fix release bins
-- Log function
 - Specify time to run all jobs
 
 ## [Unreleased]
