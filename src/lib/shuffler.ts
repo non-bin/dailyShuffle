@@ -122,15 +122,19 @@ export function checkSessionToken(req: Bun.BunRequest): string | null {
   const user = db.getUser(uid);
   const now = new Date();
 
-  if (
-    user &&
-    user.sessionToken &&
-    user.sessionTokenExpiry &&
-    user.sessionToken === sessionToken &&
-    user.sessionTokenExpiry > now
-  ) {
-    db.newSessionToken(req, uid);
-    return uid;
+  if (user && user.sessionToken && user.sessionTokenExpiry) {
+    if (user.sessionToken === sessionToken && user.sessionTokenExpiry > now) {
+      if (user.sessionTokenExpiry < new Date(now.getTime() + 5 * 60 * 60 * 1000)) db.newSessionToken(req, uid); // Update token if it's been an hour since issuing
+      return uid;
+    }
+    if (
+      user.sessionTokenOld === sessionToken &&
+      user.sessionTokenExpiry < new Date(now.getTime() + 6 * 60 * 60 * 1000 - 5 * 60 * 1000) // Expires in at least 6h-5m
+    ) {
+      // Client used old token withing 5 minutes of issuing new one
+      db.newSessionToken(req, uid);
+      return uid;
+    }
   }
 
   return null;

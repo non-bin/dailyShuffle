@@ -21,6 +21,7 @@ db.query(
       accessTokenExpiry INT,
       refreshToken STRING,
       sessionToken STRING,
+      sessionTokenOld STRING,
       sessionTokenExpiry INT
     );
   `
@@ -38,7 +39,7 @@ db.query(
 
 export function setUser(user: t.User) {
   db.query(
-    'INSERT OR REPLACE INTO users (uid, email, accessToken, accessTokenExpiry, refreshToken, sessionToken, sessionTokenExpiry) VALUES (?, ?, ?, ?, ?, ?, ?);'
+    'INSERT OR REPLACE INTO users (uid, email, accessToken, accessTokenExpiry, refreshToken, sessionToken, sessionTokenOld, sessionTokenExpiry) VALUES (?, ?, ?, ?, ?, ?, ?, ?);'
   ).run(
     user.uid,
     user.email,
@@ -46,6 +47,7 @@ export function setUser(user: t.User) {
     user.accessTokenExpiry?.getTime() || null,
     user.refreshToken || null,
     user.sessionToken || null,
+    user.sessionTokenOld || null,
     user.sessionTokenExpiry?.getTime() || null
   );
 }
@@ -53,7 +55,7 @@ export function setUser(user: t.User) {
 export function getUser(uid: string): t.User | null {
   const res = db
     .query(
-      'SELECT uid, email, accessToken, accessTokenExpiry, refreshToken, sessionToken, sessionTokenExpiry FROM users WHERE uid = ?;'
+      'SELECT uid, email, accessToken, accessTokenExpiry, refreshToken, sessionToken, sessionTokenOld, sessionTokenExpiry FROM users WHERE uid = ?;'
     )
     .get(uid);
 
@@ -128,7 +130,9 @@ export function getAllJobs(): t.Job[] {
 }
 
 function updateSessionToken(uid: string, newSessionToken: string) {
-  db.query('UPDATE users SET sessionToken = ? WHERE uid = ?;').run(newSessionToken, uid);
+  db.query(
+    'UPDATE users SET sessionTokenOld = CASE WHEN sessionTokenExpiry > unixepoch("now")*1000 THEN sessionToken END, sessionToken = ? WHERE uid = ?;'
+  ).run(newSessionToken, uid);
 }
 
 export function newSessionToken(req: Bun.BunRequest, uid: string): string {

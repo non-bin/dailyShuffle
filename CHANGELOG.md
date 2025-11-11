@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Refresh without post data
   - Allow using existing playlists as destinations
   - Allow using albums or other user's playlists as sources
+  - Logout should remove session tokens from db
 - Check or handle source=dest
 - Access token
   - Only refresh every 30m

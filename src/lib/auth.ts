@@ -117,6 +117,7 @@ export async function completeAuth(req: Bun.BunRequest) {
       accessTokenExpiry: new Date(Date.now() + accessTokenResponse.expires_in * 1000),
       refreshToken: accessTokenResponse.refresh_token,
       sessionToken,
+      sessionTokenOld: undefined, // clear
       sessionTokenExpiry: new Date(Date.now() + 6 * 60 * 60 * 1000) // 6h
     });
 
