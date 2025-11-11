@@ -92,6 +92,8 @@ export async function redirectToAuth(req: Bun.BunRequest) {
 export async function completeAuth(req: Bun.BunRequest) {
   try {
     const verifierIndex = req.cookies.get('verifier');
+    req.cookies.delete('verifier');
+
     if (!verifierIndex) {
       s.error(new Error('No verifier! Maybe your session expired'));
     }
