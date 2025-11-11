@@ -7,6 +7,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import * as s from './shuffler';
 import * as t from './types';
 
 /** Users are limited to 11000 playlists, and 11000 tracks in each https://developer.spotify.com/documentation/web-api/reference/create-playlist */
@@ -19,7 +20,7 @@ export async function fetchUserProfile(accessToken: string): Promise<t.UserProfi
   }).then((res) => res.json());
 
   if (!t.isUserProfile(result)) {
-    throw new Error('Server response was not a UserProfile!', { cause: result });
+    s.error(new Error('Server response was not a UserProfile!', { cause: result }));
   }
 
   return result;
@@ -46,11 +47,11 @@ export async function fetchUserPlaylists(accessToken: string): Promise<t.Playlis
         return items;
       }
     } else {
-      throw new Error('Server response was not a list of Playlists!', { cause: result });
+      s.error(new Error('Server response was not a list of Playlists!', { cause: result }));
     }
   }
 
-  throw new Error(`Looped more than ${MAX_LOOPS} times!`, { cause: items });
+  s.error(new Error(`Looped more than ${MAX_LOOPS} times!`, { cause: items }));
 }
 
 export async function createPlaylist(
@@ -70,7 +71,7 @@ export async function createPlaylist(
     return result;
   }
 
-  throw new Error('Server response was not a Playlist!', { cause: result });
+  s.error(new Error('Server response was not a Playlist!', { cause: result }));
 }
 
 export async function fetchPlaylist(accessToken: string, pid: string): Promise<t.Playlist> {
@@ -80,7 +81,7 @@ export async function fetchPlaylist(accessToken: string, pid: string): Promise<t
   }).then((res) => res.json());
 
   if (!t.isPlaylist(result)) {
-    throw new Error('Server response was not a Playlist!', { cause: result });
+    s.error(new Error('Server response was not a Playlist!', { cause: result }));
   }
 
   return result;
@@ -103,8 +104,8 @@ export async function fetchPlaylistTracks(accessToken: string, pid: string): Pro
         if ('track' in item) {
           if (item.track && typeof item.track === 'object' && 'uri' in item.track && typeof item.track.uri === 'string')
             items.push(item.track.uri);
-          else console.error(`Invalid track in ${pid}, ignoring`, item);
-        } else throw new Error('Server response was not a list of Playlists!', { cause: item });
+          else s.log(`Invalid track in ${pid}, ignoring`, true, item);
+        } else s.error(new Error('Server response was not a list of Playlists!', { cause: item }));
       }
 
       if ('next' in result && typeof result.next === 'string') {
@@ -113,11 +114,11 @@ export async function fetchPlaylistTracks(accessToken: string, pid: string): Pro
         return items;
       }
     } else {
-      throw new Error('Server response was not a list of Playlists!', { cause: result });
+      s.error(new Error('Server response was not a list of Playlists!', { cause: result }));
     }
   }
 
-  throw new Error(`Looped more than ${MAX_LOOPS} times!`, { cause: items });
+  s.error(new Error(`Looped more than ${MAX_LOOPS} times!`, { cause: items }));
 }
 
 /**
@@ -134,7 +135,7 @@ export async function updatePlaylistTracks(accessToken: string, pid: string, tra
   }).then((res) => res.json());
 
   if (!(result && typeof result === 'object' && 'snapshot_id' in result && typeof result.snapshot_id === 'string'))
-    throw new Error('Server response did not contain a snapshot_id!', { cause: result });
+    s.error(new Error('Server response did not contain a snapshot_id!', { cause: result }));
 
   snapshotId = result.snapshot_id;
 
@@ -147,7 +148,7 @@ export async function updatePlaylistTracks(accessToken: string, pid: string, tra
     }).then((res) => res.json());
 
     if (!(result && typeof result === 'object' && 'snapshot_id' in result && typeof result.snapshot_id === 'string'))
-      throw new Error('Server response did not contain a snapshot_id!', { cause: result });
+      s.error(new Error('Server response did not contain a snapshot_id!', { cause: result }));
 
     snapshotId = result.snapshot_id;
   }

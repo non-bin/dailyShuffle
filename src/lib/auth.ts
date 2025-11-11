@@ -9,6 +9,7 @@
 
 import * as api from './api';
 import * as db from './db';
+import * as s from './shuffler';
 import * as t from './types';
 
 /** Permissions to request from the Spotify API */
@@ -18,11 +19,11 @@ const SCOPE = 'user-read-private user-read-email playlist-modify-public playlist
 const REDIRECT_URL = process.env.DAILYSHUFFLE_REDIRECT_URL || 'http://127.0.0.1:8080/callback';
 const CLIENT_ID = process.env.DAILYSHUFFLE_CLIENT_ID || '';
 if (CLIENT_ID.length === 0) {
-  throw new Error('Please set DAILYSHUFFLE_CLIENT_ID');
+  s.error(new Error('Please set DAILYSHUFFLE_CLIENT_ID'));
 }
 const CLIENT_SECRET = process.env.DAILYSHUFFLE_CLIENT_SECRET || '';
 if (CLIENT_SECRET.length === 0) {
-  throw new Error('Please set DAILYSHUFFLE_CLIENT_SECRET');
+  s.error(new Error('Please set DAILYSHUFFLE_CLIENT_SECRET'));
 }
 
 const AUTHORIZATION = 'Basic ' + Buffer.from(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64');
@@ -92,11 +93,11 @@ export async function completeAuth(req: Bun.BunRequest) {
   try {
     const verifierIndex = req.cookies.get('verifier');
     if (!verifierIndex) {
-      throw new Error('No verifier! Maybe your session expired');
+      s.error(new Error('No verifier! Maybe your session expired'));
     }
     const verifier = removeVerifier(Number.parseInt(verifierIndex));
     if (!verifier) {
-      throw new Error('No verifier! Maybe your session expired');
+      s.error(new Error('No verifier! Maybe your session expired'));
     }
 
     const code = new URLSearchParams(new URL(req.url).search).get('code');
@@ -121,8 +122,7 @@ export async function completeAuth(req: Bun.BunRequest) {
 
     return Response.redirect('/');
   } catch (err) {
-    if (err instanceof Error) console.error(err.cause);
-    console.error(err);
+    s.error(err, false);
 
     return new Response(Error.isError(err) ? `ERROR: ${err.message}` : 'UNKNOWN', { status: 500 });
   }
@@ -169,7 +169,7 @@ async function getInitialAccessToken(verifier: string, code: string): Promise<t.
     return result;
   }
 
-  throw new Error('Server response did not contain an accessToken!', { cause: result });
+  s.error(new Error('Server response did not contain an accessToken!', { cause: result }));
 }
 
 /**
@@ -190,5 +190,5 @@ export async function refreshAccessToken(refreshToken: string): Promise<t.Access
     return result;
   }
 
-  throw new Error('Server response did not contain an accessToken!', { cause: result });
+  s.error(new Error('Server response did not contain an accessToken!', { cause: result }));
 }

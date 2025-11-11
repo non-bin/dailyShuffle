@@ -98,18 +98,10 @@ const server = Bun.serve({
 
   fetch(req) {
     return new Response('Not Found', { status: 404 });
-  },
-
-  error(err) {
-    if (err instanceof Error) console.error('Cause:', err.cause);
-    else console.error('Unknown cause');
-    console.error(err);
   }
 });
 
-console.log(`Server running at ${server.url}`);
-
-s.runAllJobs();
+s.log(`Server running at ${server.url}`);
 
 setInterval(() => {
   s.runAllJobs();

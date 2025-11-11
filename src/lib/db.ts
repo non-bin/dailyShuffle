@@ -9,6 +9,7 @@
 
 import { Database } from 'bun:sqlite';
 import * as t from './types';
+import * as s from './shuffler';
 
 const db = new Database('dailyShuffle.sqlite', { create: true, strict: true });
 db.query(
@@ -59,13 +60,13 @@ export function getUser(uid: string): t.User | null {
   if (!res || typeof res !== 'object') return null;
 
   if (!('accessTokenExpiry' in res) || typeof res.accessTokenExpiry !== 'number')
-    throw new TypeError('Invalid accessTokenExpiry!', { cause: res });
+    s.error(new TypeError('Invalid accessTokenExpiry!', { cause: res }));
   res.accessTokenExpiry = new Date(res.accessTokenExpiry);
   if (!('sessionTokenExpiry' in res) || typeof res.sessionTokenExpiry !== 'number')
-    throw new TypeError('Invalid sessionTokenExpiry!', { cause: res });
+    s.error(new TypeError('Invalid sessionTokenExpiry!', { cause: res }));
   res.sessionTokenExpiry = new Date(res.sessionTokenExpiry);
 
-  if (!t.isUser(res)) throw new TypeError('Not an instance of User!', { cause: res });
+  if (!t.isUser(res)) s.error(new TypeError('Not an instance of User!', { cause: res }));
 
   return res;
 }
@@ -80,8 +81,8 @@ export function setJob(job: t.Job) {
 
 export function deleteJob(destinationPID: string) {
   const res = db.query('DELETE FROM jobs WHERE destinationPID = ? RETURNING destinationPID;').run(destinationPID);
-  if (res.changes > 1) throw new Error('Invalid response!', { cause: { res, destinationPID } });
-  if (res.changes < 1) throw new Error('No such job!', { cause: { res, destinationPID } });
+  if (res.changes > 1) s.error(new Error('Invalid response!', { cause: { res, destinationPID } }));
+  if (res.changes < 1) s.error(new Error('No such job!', { cause: { res, destinationPID } }));
 }
 
 export function getJob(destinationPID: string): t.Job | null {
@@ -89,7 +90,7 @@ export function getJob(destinationPID: string): t.Job | null {
 
   if (!res || typeof res !== 'object') return null;
 
-  if (!t.isJob(res)) throw new TypeError('Not an instance of Job!', { cause: res });
+  if (!t.isJob(res)) s.error(new TypeError('Not an instance of Job!', { cause: res }));
 
   return res;
 }
@@ -102,7 +103,7 @@ export function getUserJobs(uid: string): t.Job[] {
   const out: t.Job[] = [];
 
   for (const job of res) {
-    if (!t.isJob(job)) throw new TypeError('Not an instance of Job!', { cause: job });
+    if (!t.isJob(job)) s.error(new TypeError('Not an instance of Job!', { cause: job }));
 
     out.push(job);
   }
@@ -118,7 +119,7 @@ export function getAllJobs(): t.Job[] {
   const out: t.Job[] = [];
 
   for (const job of res) {
-    if (!t.isJob(job)) throw new TypeError('Not an instance of Job!', { cause: job });
+    if (!t.isJob(job)) s.error(new TypeError('Not an instance of Job!', { cause: job }));
 
     out.push(job);
   }

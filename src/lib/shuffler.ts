@@ -12,12 +12,28 @@ import * as auth from './auth';
 import * as api from './api';
 import * as db from './db';
 
+export function log(message: string, error: boolean = false, ...params: any[]) {
+  const logFunction = error ? console.error : console.log;
+
+  logFunction(`${new Date().toISOString()} - ${message}`, ...params);
+}
+
+export function error(error: any): never;
+export function error(error: any, shouldThrow: true, ...params: any[]): never;
+export function error(error: any, shouldThrow: false, ...params: any[]): void;
+export function error(error: any, shouldThrow: boolean = true, ...params: any[]): never {
+  const cause = 'cause' in error ? error.cause : undefined;
+  log(`${error.name}: ${error.message}`, true, { cause }, ...params);
+
+  throw error;
+}
+
 /**
  * Returns the access token from the db if it's still valid, otherwise gets a new one with {@link refreshAccessToken}
  */
 export async function getAccessToken(uid: string, expiryWindowMinutes: number = 5): Promise<string> {
   const user = db.getUser(uid);
-  if (!user) throw new Error('Unknown uid!');
+  if (!user) error(new Error('Unknown uid!'));
 
   if (
     user.accessToken &&
@@ -39,7 +55,7 @@ export async function getAccessToken(uid: string, expiryWindowMinutes: number = 
     return res.access_token;
   }
 
-  throw new Error('Not authenticated!');
+  error(new Error('Not authenticated!'));
 }
 
 /**
@@ -72,7 +88,7 @@ export async function runAllJobs() {
   let successes = 0;
   let errors = 0;
   const start = new Date();
-  console.log(`${start.toISOString()} - Running all jobs`);
+  log('Running all jobs');
 
   const jobs = db.getAllJobs();
   for await (const job of jobs) {
@@ -81,18 +97,16 @@ export async function runAllJobs() {
       successes++;
     } catch (err) {
       errors++;
-      console.error('Error while processing job:', job);
-
-      if (err instanceof Error) console.error('Cause:', err.cause);
-      console.error(err);
+      log('Error while processing job:', true, job);
+      error(err, false);
     }
   }
 
   const end = new Date();
   const duration = (end.getTime() - start.getTime()) / 1000;
-  if (duration > 2 * 60) console.error('Took more than 2 minutes!');
-  console.log(
-    `${end.toISOString()} - Finished running all jobs with ${successes} successes, and ${errors} errors. Took ${duration.toFixed()} seconds`
+  if (duration > 2 * 60) error('Took more than 2 minutes!');
+  log(
+    `Finished running all jobs with ${successes} successes, and ${errors} errors. Took ${duration.toFixed()} seconds`
   );
 }
 
@@ -157,8 +171,8 @@ export async function userJobs(uid: string | null): Promise<{ email?: string; jo
 
 export function updateJobSource(uid: string, destinationPID: string, sourcePID: string) {
   const job = db.getJob(destinationPID);
-  if (!job) throw new Error('Job not found!', { cause: { destinationPID } });
-  if (job.uid !== uid) throw new Error('Wrong uid!', { cause: { job, uid } });
+  if (!job) error(new Error('Job not found!', { cause: { destinationPID } }));
+  if (job.uid !== uid) error(new Error('Wrong uid!', { cause: { job, uid } }));
 
   job.sourcePID = sourcePID;
   db.setJob(job);
@@ -178,8 +192,8 @@ export async function createJob(uid: string, sourcePID: string, destinationName:
 
 export function deleteJob(uid: string, destinationPID: string) {
   const job = db.getJob(destinationPID);
-  if (!job) throw new Error('Job not found!', { cause: { destinationPID } });
-  if (job.uid !== uid) throw new Error('Wrong uid!', { cause: { job, uid } });
+  if (!job) error(new Error('Job not found!', { cause: { destinationPID } }));
+  if (job.uid !== uid) error(new Error('Wrong uid!', { cause: { job, uid } }));
 
   db.deleteJob(job.destinationPID);
 }
