@@ -15,6 +15,7 @@ DAILYSHUFFLE_CLIENT_SECRET=changeme
 DAILYSHUFFLE_HOSTNAME=127.0.0.1
 DAILYSHUFFLE_PORT=8080
 DAILYSHUFFLE_REDIRECT_URL=http://127.0.0.1:8080/callback
+DAILYSHUFFLE_DB_PATH=dailyShuffle.sqlite # Relative to cwd when running
 ```
 
 This project is written using the [Bun](https://bun.com/) runtime, it will not work with another runtime like NodeJS.

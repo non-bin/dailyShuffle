@@ -13,9 +13,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Allow using albums or other user's playlists as sources
 - Check or handle source=dest
 - Check db return values
-- Access token
-  - Only refresh every 30m
-  - Accept previous access token for a few minutes after refresh
 - Save snapshot ids
   - Revert on error
 - Handle deleted source/destination (or invalid on create/update)

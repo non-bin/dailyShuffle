@@ -11,7 +11,9 @@ import { Database } from 'bun:sqlite';
 import * as t from './types';
 import * as s from './shuffler';
 
-const db = new Database('dailyShuffle.sqlite', { create: true, strict: true });
+const DB_PATH = process.env.DAILYSHUFFLE_DB_PATH || 'dailyShuffle.sqlite';
+
+const db = new Database(DB_PATH, { create: true, strict: true });
 db.query(
   `
     CREATE TABLE IF NOT EXISTS users (
