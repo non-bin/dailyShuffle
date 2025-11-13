@@ -57,6 +57,19 @@ const server = Bun.serve({
       return Response.redirect('/auth');
     },
 
+    '/logout': (req) => {
+      const uid = s.checkSessionToken(req);
+      if (uid) {
+        s.logout(uid);
+        req.cookies.delete('uid');
+        req.cookies.delete('sessionToken');
+
+        return Response.redirect('/');
+      }
+
+      return new Response('Not authenticated!', { status: 401 });
+    },
+
     '/userPlaylists': async (req) => {
       const uid = s.checkSessionToken(req);
       const res = await s.userPlaylists(uid);
