@@ -70,7 +70,9 @@ function removeVerifier(index: number): string | null {
  */
 export async function redirectToAuth(req: Bun.BunRequest) {
   const verifier = randomString(128);
-  req.cookies.set('verifier', addVerifier(verifier).toString(), { maxAge: 60 * 15 }); // 15 minutes
+  req.cookies.set('verifier', addVerifier(verifier).toString(), {
+    maxAge: 60 * 15,
+  }); // 15 minutes
   const challenge = await generateCodeChallenge(verifier);
 
   const params = new URLSearchParams();
@@ -120,7 +122,7 @@ export async function completeAuth(req: Bun.BunRequest) {
       refreshToken: accessTokenResponse.refresh_token,
       sessionToken,
       sessionTokenOld: undefined, // clear
-      sessionTokenExpiry: new Date(Date.now() + 6 * 60 * 60 * 1000) // 6h
+      sessionTokenExpiry: new Date(Date.now() + 6 * 60 * 60 * 1000), // 6h
     });
 
     return Response.redirect('/');
@@ -165,14 +167,18 @@ async function getInitialAccessToken(verifier: string, code: string): Promise<t.
   const result = await fetch('https://accounts.spotify.com/api/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: params
+    body: params,
   }).then((res) => res.json());
 
   if (t.isAccessTokenResponse(result)) {
     return result;
   }
 
-  s.error(new Error('Server response did not contain an accessToken!', { cause: result }));
+  s.error(
+    new Error('Server response did not contain an accessToken!', {
+      cause: result,
+    }),
+  );
 }
 
 /**
@@ -185,13 +191,20 @@ export async function refreshAccessToken(refreshToken: string): Promise<t.Access
 
   const result = await fetch('https://accounts.spotify.com/api/token', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Authorization': AUTHORIZATION },
-    body: params
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Authorization': AUTHORIZATION,
+    },
+    body: params,
   }).then((res) => res.json());
 
   if (t.isAccessTokenResponse(result)) {
     return result;
   }
 
-  s.error(new Error('Server response did not contain an accessToken!', { cause: result }));
+  s.error(
+    new Error('Server response did not contain an accessToken!', {
+      cause: result,
+    }),
+  );
 }

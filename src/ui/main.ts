@@ -20,19 +20,27 @@ if (!logoutElement || !(logoutElement instanceof HTMLElement))
 // Edit
 const editJobsContainer = document.getElementById('editJobs');
 if (!editJobsContainer || !(editJobsContainer instanceof HTMLDivElement))
-  throw TypeError('editJobsContainer element not found', { cause: editJobsContainer });
+  throw TypeError('editJobsContainer element not found', {
+    cause: editJobsContainer,
+  });
 
 const editJobsDestination = document.getElementById('editJobsDestination');
 if (!editJobsDestination || !(editJobsDestination instanceof HTMLSelectElement))
-  throw TypeError('editJobsDestination element not found', { cause: editJobsDestination });
+  throw TypeError('editJobsDestination element not found', {
+    cause: editJobsDestination,
+  });
 
 const editJobsSource = document.getElementById('editJobsSource');
 if (!editJobsSource || !(editJobsSource instanceof HTMLSelectElement))
-  throw TypeError('editJobsSource element not found', { cause: editJobsSource });
+  throw TypeError('editJobsSource element not found', {
+    cause: editJobsSource,
+  });
 
 const editJobsSourceSearch = document.getElementById('editJobsSourceSearch');
 if (!editJobsSourceSearch || !(editJobsSourceSearch instanceof HTMLButtonElement))
-  throw TypeError('editJobsSourceSearch element not found', { cause: editJobsSourceSearch });
+  throw TypeError('editJobsSourceSearch element not found', {
+    cause: editJobsSourceSearch,
+  });
 
 const editJobsSave = document.getElementById('editJobsSave');
 if (!editJobsSave || !(editJobsSave instanceof HTMLButtonElement))
@@ -40,12 +48,16 @@ if (!editJobsSave || !(editJobsSave instanceof HTMLButtonElement))
 
 const editJobsDelete = document.getElementById('editJobsDelete');
 if (!editJobsDelete || !(editJobsDelete instanceof HTMLButtonElement))
-  throw TypeError('editJobsDelete element not found', { cause: editJobsDelete });
+  throw TypeError('editJobsDelete element not found', {
+    cause: editJobsDelete,
+  });
 
 // New
 const newJobContainer = document.getElementById('newJob');
 if (!newJobContainer || !(newJobContainer instanceof HTMLDivElement))
-  throw TypeError('newJobContainer element not found', { cause: newJobContainer });
+  throw TypeError('newJobContainer element not found', {
+    cause: newJobContainer,
+  });
 
 const newJobSource = document.getElementById('newJobSource');
 if (!newJobSource || !(newJobSource instanceof HTMLSelectElement))
@@ -53,11 +65,15 @@ if (!newJobSource || !(newJobSource instanceof HTMLSelectElement))
 
 const newJobSourceSearch = document.getElementById('newJobSourceSearch');
 if (!newJobSourceSearch || !(newJobSourceSearch instanceof HTMLButtonElement))
-  throw TypeError('newJobSourceSearch element not found', { cause: newJobSourceSearch });
+  throw TypeError('newJobSourceSearch element not found', {
+    cause: newJobSourceSearch,
+  });
 
 const newJobDestinationName = document.getElementById('newJobDestinationName');
 if (!newJobDestinationName || !(newJobDestinationName instanceof HTMLInputElement))
-  throw TypeError('newJobDestinationName element not found', { cause: newJobDestinationName });
+  throw TypeError('newJobDestinationName element not found', {
+    cause: newJobDestinationName,
+  });
 
 const newJobSave = document.getElementById('newJobSave');
 if (!newJobSave || !(newJobSave instanceof HTMLButtonElement))
@@ -159,12 +175,12 @@ const fetchPlaylists = () => {
 
       for (const playlist of res) {
         if (
-          playlist &&
-          typeof playlist === 'object' &&
-          'name' in playlist &&
-          typeof playlist.name === 'string' &&
-          'id' in playlist &&
-          typeof playlist.id === 'string'
+          playlist
+          && typeof playlist === 'object'
+          && 'name' in playlist
+          && typeof playlist.name === 'string'
+          && 'id' in playlist
+          && typeof playlist.id === 'string'
         ) {
           const optionElement = document.createElement('option');
           optionElement.value = playlist.id;

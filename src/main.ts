@@ -49,8 +49,8 @@ const server = Bun.serve({
 
         return new Response(await Bun.file('./src/ui/index.html').bytes(), {
           headers: {
-            'Content-Type': 'text/html'
-          }
+            'Content-Type': 'text/html',
+          },
         });
       }
 
@@ -97,8 +97,8 @@ const server = Bun.serve({
     '/main.js': async () => {
       return new Response((await Bun.build({ entrypoints: ['src/ui/main.ts'] })).outputs[0], {
         headers: {
-          'Content-Type': 'text/javascript'
-        }
+          'Content-Type': 'text/javascript',
+        },
       });
     },
 
@@ -106,17 +106,40 @@ const server = Bun.serve({
       s.runAllJobs();
 
       return new Response();
-    }
+    },
   },
 
   fetch(req) {
     return new Response('Not Found', { status: 404 });
-  }
+  },
 });
 
 s.log(`Server running at ${server.url}`);
 
-setInterval(() => {
-  s.runAllJobs();
-  auth.cleanVerifiers();
-}, 24 * 60 * 60 * 1000);
+// test //
+
+// import * as db from './lib/db';
+
+// // Boop
+// db.setJob({
+//   destinationPID: '14MPe67TMyfcY3GX38dTmP',
+//   sourcePID: '3XN2zUlYzVlTwZgNfHCKRQ',
+//   uid: 'w4ifp2anlm4zlw4ett8irmfa6'
+// });
+
+// // Test
+// db.setJob({
+//   destinationPID: '5lmyDVCHIK21SQr2WC4ui5',
+//   sourcePID: '5DkdsC3CvmF3GA5TlLxMo2',
+//   uid: 'w4ifp2anlm4zlw4ett8irmfa6'
+// });
+
+// s.runAllJobs();
+
+setInterval(
+  () => {
+    s.runAllJobs();
+    auth.cleanVerifiers();
+  },
+  24 * 60 * 60 * 1000,
+);

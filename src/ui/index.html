@@ -7,7 +7,7 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 -->
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -20,7 +20,10 @@
       <div class="container">
         <!-- Titles -->
         <h1 class="title">Daily Shuffle</h1>
-        <p class="subtitle">Welcome<strong id="userName"></strong>! <a id="logout" style="display: none">Logout</a></p>
+        <p class="subtitle">
+          Welcome<strong id="userName"></strong>!
+          <a id="logout" style="display: none">Logout</a>
+        </p>
 
         <!-- Boxes -->
         <div class="columns">
@@ -53,7 +56,8 @@
                       id="editJobsSource"
                       name="source"
                       title="You must search for source playlists first"
-                      required></select>
+                      required
+                    ></select>
                   </div>
                 </div>
                 <div class="control">
@@ -70,7 +74,8 @@
                     type="submit"
                     name="action"
                     value="update"
-                    title="You must search for source playlists first">
+                    title="You must search for source playlists first"
+                  >
                     Save
                   </button>
                 </div>
@@ -81,7 +86,8 @@
                     type="submit"
                     name="action"
                     value="delete"
-                    title="Only removes shuffle job, leaves destination playlist intact">
+                    title="Only removes shuffle job, leaves destination playlist intact"
+                  >
                     Remove Job
                   </button>
                 </div>
@@ -105,7 +111,8 @@
                       id="newJobSource"
                       name="source"
                       title="You must search for source playlists first"
-                      required></select>
+                      required
+                    ></select>
                   </div>
                 </div>
                 <div class="control">
@@ -122,7 +129,8 @@
                   type="text"
                   name="destination"
                   value=""
-                  required />
+                  required
+                />
                 <p class="help">Can be changed later from the Spotify app</p>
               </div>
 
@@ -135,7 +143,8 @@
                     type="submit"
                     name="action"
                     value="add"
-                    title="You must search for source playlists first">
+                    title="You must search for source playlists first"
+                  >
                     Save
                   </button>
                 </div>

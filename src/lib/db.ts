@@ -26,7 +26,7 @@ db.query(
       sessionTokenOld STRING,
       sessionTokenExpiry INT
     );
-  `
+  `,
 ).run();
 
 db.query(
@@ -36,12 +36,12 @@ db.query(
       sourcePID STRING,
       destinationPID STRING PRIMARY KEY
     );
-  `
+  `,
 ).run();
 
 export function setUser(user: t.User) {
   db.query(
-    'INSERT OR REPLACE INTO users (uid, email, accessToken, accessTokenExpiry, refreshToken, sessionToken, sessionTokenOld, sessionTokenExpiry) VALUES (?, ?, ?, ?, ?, ?, ?, ?);'
+    'INSERT OR REPLACE INTO users (uid, email, accessToken, accessTokenExpiry, refreshToken, sessionToken, sessionTokenOld, sessionTokenExpiry) VALUES (?, ?, ?, ?, ?, ?, ?, ?);',
   ).run(
     user.uid,
     user.email,
@@ -50,14 +50,14 @@ export function setUser(user: t.User) {
     user.refreshToken || null,
     user.sessionToken || null,
     user.sessionTokenOld || null,
-    user.sessionTokenExpiry?.getTime() || null
+    user.sessionTokenExpiry?.getTime() || null,
   );
 }
 
 export function getUser(uid: string): t.User | null {
   const res = db
     .query(
-      'SELECT uid, email, accessToken, accessTokenExpiry, refreshToken, sessionToken, sessionTokenOld, sessionTokenExpiry FROM users WHERE uid = ?;'
+      'SELECT uid, email, accessToken, accessTokenExpiry, refreshToken, sessionToken, sessionTokenOld, sessionTokenExpiry FROM users WHERE uid = ?;',
     )
     .get(uid);
 
@@ -79,7 +79,7 @@ export function setJob(job: t.Job) {
   db.query('INSERT OR REPLACE INTO jobs (uid, destinationPID, sourcePID) VALUES (?, ?, ?);').run(
     job.uid,
     job.destinationPID,
-    job.sourcePID
+    job.sourcePID,
   );
 }
 
@@ -133,7 +133,7 @@ export function getAllJobs(): t.Job[] {
 
 function updateSessionToken(uid: string, newSessionToken: string, expires: Date) {
   db.query(
-    'UPDATE users SET sessionTokenOld = CASE WHEN sessionTokenExpiry > unixepoch("now")*1000 THEN sessionToken END, sessionToken = ?, sessionTokenExpiry = ? WHERE uid = ?;'
+    'UPDATE users SET sessionTokenOld = CASE WHEN sessionTokenExpiry > unixepoch("now")*1000 THEN sessionToken END, sessionToken = ?, sessionTokenExpiry = ? WHERE uid = ?;',
   ).run(newSessionToken, expires.getTime(), uid);
 }
 

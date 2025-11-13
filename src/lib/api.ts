@@ -16,7 +16,7 @@ const MAX_LOOPS = 300;
 export async function fetchUserProfile(accessToken: string): Promise<t.UserProfile> {
   const result = await fetch('https://api.spotify.com/v1/me', {
     method: 'GET',
-    headers: { Authorization: `Bearer ${accessToken}` }
+    headers: { Authorization: `Bearer ${accessToken}` },
   }).then((res) => res.json());
 
   if (!t.isUserProfile(result)) {
@@ -34,7 +34,7 @@ export async function fetchUserPlaylists(accessToken: string): Promise<t.Playlis
   for (let i = 0; i < MAX_LOOPS; i++) {
     const result = await fetch(next, {
       method: 'GET',
-      headers: { Authorization: `Bearer ${accessToken}` }
+      headers: { Authorization: `Bearer ${accessToken}` },
     }).then((res) => res.json());
 
     if (result && typeof result === 'object' && 'items' in result && t.isListOf(result.items, t.isPlaylist)) {
@@ -47,7 +47,11 @@ export async function fetchUserPlaylists(accessToken: string): Promise<t.Playlis
         return items;
       }
     } else {
-      s.error(new Error('Server response was not a list of Playlists!', { cause: result }));
+      s.error(
+        new Error('Server response was not a list of Playlists!', {
+          cause: result,
+        }),
+      );
     }
   }
 
@@ -59,12 +63,15 @@ export async function createPlaylist(
   uid: string,
   name: string,
   description: string = '',
-  publicAccess: boolean = true
+  publicAccess: boolean = true,
 ): Promise<t.Playlist> {
   const result = await fetch(`https://api.spotify.com/v1/users/${uid}/playlists`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
-    body: JSON.stringify({ name, description, public: publicAccess })
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ name, description, public: publicAccess }),
   }).then((res) => res.json());
 
   if (t.isPlaylist(result)) {
@@ -77,7 +84,7 @@ export async function createPlaylist(
 export async function fetchPlaylist(accessToken: string, pid: string): Promise<t.Playlist> {
   const result = await fetch(`https://api.spotify.com/v1/playlists/${pid}`, {
     method: 'GET',
-    headers: { Authorization: `Bearer ${accessToken}` }
+    headers: { Authorization: `Bearer ${accessToken}` },
   }).then((res) => res.json());
 
   if (!t.isPlaylist(result)) {
@@ -96,7 +103,7 @@ export async function fetchPlaylistTracks(accessToken: string, pid: string): Pro
   for (let i = 0; i < MAX_LOOPS; i++) {
     const result = await fetch(next, {
       method: 'GET',
-      headers: { Authorization: `Bearer ${accessToken}` }
+      headers: { Authorization: `Bearer ${accessToken}` },
     }).then((res) => res.json());
 
     if (result && typeof result === 'object' && 'items' in result && Array.isArray(result.items)) {
@@ -105,7 +112,12 @@ export async function fetchPlaylistTracks(accessToken: string, pid: string): Pro
           if (item.track && typeof item.track === 'object' && 'uri' in item.track && typeof item.track.uri === 'string')
             items.push(item.track.uri);
           else s.log(`Invalid track in ${pid}, ignoring`, true, item);
-        } else s.error(new Error('Server response was not a list of Playlists!', { cause: item }));
+        } else
+          s.error(
+            new Error('Server response was not a list of Playlists!', {
+              cause: item,
+            }),
+          );
       }
 
       if ('next' in result && typeof result.next === 'string') {
@@ -114,7 +126,11 @@ export async function fetchPlaylistTracks(accessToken: string, pid: string): Pro
         return items;
       }
     } else {
-      s.error(new Error('Server response was not a list of Playlists!', { cause: result }));
+      s.error(
+        new Error('Server response was not a list of Playlists!', {
+          cause: result,
+        }),
+      );
     }
   }
 
@@ -130,12 +146,19 @@ export async function updatePlaylistTracks(accessToken: string, pid: string, tra
   // Initial chunk
   const result = await fetch(`https://api.spotify.com/v1/playlists/${pid}/tracks`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
-    body: JSON.stringify({ uris: tracksURIs.slice(0, 100) })
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ uris: tracksURIs.slice(0, 100) }),
   }).then((res) => res.json());
 
   if (!(result && typeof result === 'object' && 'snapshot_id' in result && typeof result.snapshot_id === 'string'))
-    s.error(new Error('Server response did not contain a snapshot_id!', { cause: result }));
+    s.error(
+      new Error('Server response did not contain a snapshot_id!', {
+        cause: result,
+      }),
+    );
 
   snapshotId = result.snapshot_id;
 
@@ -143,12 +166,19 @@ export async function updatePlaylistTracks(accessToken: string, pid: string, tra
   for (let i = 100; i < tracksURIs.length; i += 100) {
     const result = await fetch(`https://api.spotify.com/v1/playlists/${pid}/tracks`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
-      body: JSON.stringify({ uris: tracksURIs.slice(i, i + 100) })
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ uris: tracksURIs.slice(i, i + 100) }),
     }).then((res) => res.json());
 
     if (!(result && typeof result === 'object' && 'snapshot_id' in result && typeof result.snapshot_id === 'string'))
-      s.error(new Error('Server response did not contain a snapshot_id!', { cause: result }));
+      s.error(
+        new Error('Server response did not contain a snapshot_id!', {
+          cause: result,
+        }),
+      );
 
     snapshotId = result.snapshot_id;
   }

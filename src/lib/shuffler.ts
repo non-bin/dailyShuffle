@@ -36,9 +36,9 @@ export async function getAccessToken(uid: string, expiryWindowMinutes: number = 
   if (!user) error(new Error('Unknown uid!'));
 
   if (
-    user.accessToken &&
-    user.accessTokenExpiry &&
-    user.accessTokenExpiry > new Date(Date.now() + expiryWindowMinutes * 60000)
+    user.accessToken
+    && user.accessTokenExpiry
+    && user.accessTokenExpiry > new Date(Date.now() + expiryWindowMinutes * 60000)
   ) {
     return user.accessToken;
   }
@@ -106,7 +106,7 @@ export async function runAllJobs() {
   const duration = (end.getTime() - start.getTime()) / 1000;
   if (duration > 2 * 60) error('Took more than 2 minutes!');
   log(
-    `Finished running all jobs with ${successes} successes, and ${errors} errors. Took ${duration.toFixed()} seconds`
+    `Finished running all jobs with ${successes} successes, and ${errors} errors. Took ${duration.toFixed()} seconds`,
   );
 }
 
@@ -128,8 +128,8 @@ export function checkSessionToken(req: Bun.BunRequest): string | null {
       return uid;
     }
     if (
-      user.sessionTokenOld === sessionToken &&
-      user.sessionTokenExpiry < new Date(now.getTime() + 6 * 60 * 60 * 1000 - 5 * 60 * 1000) // Expires in at least 6h-5m
+      user.sessionTokenOld === sessionToken
+      && user.sessionTokenExpiry < new Date(now.getTime() + 6 * 60 * 60 * 1000 - 5 * 60 * 1000) // Expires in at least 6h-5m
     ) {
       // Client used old token withing 5 minutes of issuing new one
       db.newSessionToken(req, uid);
@@ -164,7 +164,7 @@ export async function userJobs(uid: string | null): Promise<{ email?: string; jo
       jobsWithNames.push({
         ...job,
         sourceName: (await sourcePlaylist).name,
-        destinationName: (await destinationPlaylist).name
+        destinationName: (await destinationPlaylist).name,
       });
     }
 
@@ -187,7 +187,7 @@ export async function createJob(uid: string, sourcePID: string, destinationName:
   const job = {
     destinationPID: (await api.createPlaylist(await getAccessToken(uid), uid, destinationName)).id,
     sourcePID,
-    uid
+    uid,
   };
 
   db.setJob(job);
