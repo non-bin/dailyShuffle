@@ -4,7 +4,11 @@ Create shuffled versions of your Spotify playlists, refreshed every day
 
 ## How to Run
 
-Create a `.env` file in the directory you will run Daily Shuffle from, using the following template:
+- Create an app in the [Spotify Developer Portal](https://developer.spotify.com/dashboard)
+  - Check `Web API` under `Which API/SDKs are you planning to use?`
+  - Make sure to add the url of your callback endpoint to the `Redirect URIs` (this should be the same as `DAILYSHUFFLE_REDIRECT_URL`)
+
+- Create a `.env` file in the directory you will run Daily Shuffle from, using the following template and the client ID and secret from the Spotify Developer Portal
 
 ```ini
 # Required
@@ -18,7 +22,7 @@ DAILYSHUFFLE_REDIRECT_URL=http://127.0.0.1:8080/callback
 DAILYSHUFFLE_DB_PATH=dailyShuffle.sqlite # Relative to cwd when running
 ```
 
-Download the correct release binary for your system from <https://github.com/non-bin/dailyShuffle/releases/latest>, and run it.
+- Download the correct release binary for your system from <https://github.com/non-bin/dailyShuffle/releases/latest>, and run it.
 
 ## Contributing
 
