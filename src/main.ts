@@ -9,7 +9,35 @@
  * (at your option) any later version.
  */
 
+import { version } from '../package.json';
+import util from 'util';
+
+const { values: args } = util.parseArgs({
+  args: Bun.argv,
+  options: {
+    version: {
+      type: 'boolean',
+    },
+  },
+  strict: true,
+  allowPositionals: true,
+});
+if (args.version) {
+  console.log(`Daily Shuffle v${version}
+
+Copyright (C) 2025  Alice Jacka
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Source code: <https://github.com/non-bin/dailyShuffle>`);
+  process.exit(0);
+}
+
 const BUNDLED = process.env.DAILYSHUFFLE_BUNDLED === 'true';
+const HOSTNAME = process.env.DAILYSHUFFLE_HOSTNAME || '127.0.0.1';
+const PORT = process.env.DAILYSHUFFLE_PORT || '8080';
 
 import * as auth from './lib/auth';
 import * as s from './lib/shuffler';
@@ -23,9 +51,6 @@ const uiJs: string =
   BUNDLED ?
     (_uiJs as string)
   : await Bun.build({ entrypoints: [_uiTs as string], minify: true }).then((x) => x.outputs[0]!.text());
-
-const HOSTNAME = process.env.DAILYSHUFFLE_HOSTNAME || '127.0.0.1';
-const PORT = process.env.DAILYSHUFFLE_PORT || '8080';
 
 const server = Bun.serve({
   hostname: HOSTNAME,

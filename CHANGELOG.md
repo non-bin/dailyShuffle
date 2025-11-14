@@ -21,8 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow specifying run frequency
 - Specify time to run all jobs
 
-## [Unreleased]
-
 ## [0.1.0] - 2025-11-14
 
 ### Added
@@ -33,5 +31,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Automatic shuffling
 - Release builds
 
-[Unreleased]: https://github.com/non-bin/dailyShuffle
 [0.1.0]: https://github.com/non-bin/dailyShuffle/releases/tag/v0.1.0

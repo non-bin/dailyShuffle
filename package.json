@@ -1,7 +1,7 @@
 {
   "name": "dailyshuffle",
   "description": "Create shuffled versions of your Spotify playlists, refreshed every day",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "module": "src/main.ts",
   "devDependencies": {
     "@types/bun": "latest"
@@ -21,7 +21,7 @@
   "bugs": {
     "url": "https://github.com/non-bin/dailyShuffle/issues"
   },
-  "license": "AGPL-3.0-only",
+  "license": "AGPL-3.0-or-later",
   "devEngines": {
     "runtime": {
       "name": "node",
