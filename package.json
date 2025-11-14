@@ -11,7 +11,8 @@
   },
   "private": false,
   "scripts": {
-    "dev": "bun run --watch --no-clear-screen ./src/main.ts"
+    "dev": "bun run --watch --no-clear-screen ./src/main.ts",
+    "release": "./release.sh"
   },
   "type": "module",
   "author": "Alice Jacka",

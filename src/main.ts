@@ -7,8 +7,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+const BUNDLED = process.env.DAILYSHUFFLE_BUNDLED === 'true';
+
 import * as auth from './lib/auth';
 import * as s from './lib/shuffler';
+
+import _uiHtml from './ui/index.html' with { type: 'text' };
+const uiHtml: string = _uiHtml as unknown as string; // Text
+
+import _uiTs from './ui/main.ts' with { type: 'file' }; // So it reloads when editing
+import _uiJs from '../build/ui.js' with { type: 'text' }; // For the build
+const uiJs: string =
+  BUNDLED ?
+    (_uiJs as string)
+  : await Bun.build({ entrypoints: [_uiTs as string], minify: true }).then((x) => x.outputs[0]!.text());
 
 const HOSTNAME = process.env.DAILYSHUFFLE_HOSTNAME || '127.0.0.1';
 const PORT = process.env.DAILYSHUFFLE_PORT || '8080';
@@ -47,11 +59,7 @@ const server = Bun.serve({
           }
         }
 
-        return new Response(await Bun.file('./src/ui/index.html').bytes(), {
-          headers: {
-            'Content-Type': 'text/html',
-          },
-        });
+        return new Response(uiHtml, { headers: { 'Content-Type': 'text/html' } });
       }
 
       return Response.redirect('/auth');
@@ -94,13 +102,7 @@ const server = Bun.serve({
       return auth.completeAuth(req);
     },
 
-    '/main.js': async () => {
-      return new Response((await Bun.build({ entrypoints: ['src/ui/main.ts'] })).outputs[0], {
-        headers: {
-          'Content-Type': 'text/javascript',
-        },
-      });
-    },
+    '/main.js': new Response(uiJs, { headers: { 'Content-Type': 'text/javascript' } }),
 
     '/test': () => {
       s.runAllJobs();

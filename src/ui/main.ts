@@ -255,3 +255,5 @@ editJobsDestination.addEventListener('change', () => {
     updateEditJobsSource(job!.sourcePID, job!.sourceName);
   } else throw new Error('Unknown job!', { cause: { newJobDestinationPID, jobs } });
 });
+
+export default {}; // Fixes error when importing into main.ts, even though it's not really imported
