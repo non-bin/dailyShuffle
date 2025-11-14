@@ -18,6 +18,10 @@ DAILYSHUFFLE_REDIRECT_URL=http://127.0.0.1:8080/callback
 DAILYSHUFFLE_DB_PATH=dailyShuffle.sqlite # Relative to cwd when running
 ```
 
+Download the correct release binary for your system from <https://github.com/non-bin/dailyShuffle/releases/latest>, and run it.
+
+## Contributing
+
 This project is written using the [Bun](https://bun.com/) runtime, it will not work with another runtime like NodeJS.
 
 ### Running
@@ -30,8 +34,6 @@ bun i -p # Install production dependencies
 
 bun dev # Start the dev server
 ```
-
-## Contributing
 
 ### File Layout
 
@@ -47,6 +49,14 @@ In the `src` directory:
 - ui/
   - index.html - Single page interface, using the [Bulma](https://bulma.io/documentation) CSS framework
   - main.ts - Transpiled to js by `/main.ts`
+
+## Building for Release
+
+All you have to do it run `bun release` and all the weird stuff is handled. What it does is:
+
+- Compile `src/ui/main.ts` to `build/ui.js`
+- Set `DAILYSHUFFLE_BUNDLED=true` so the bundle knows it's a bundle and should use the bundled `ui.js`
+- Compile everything into 5 different architecture binaries in `dist/`
 
 ## License
 
