@@ -2,9 +2,11 @@
  * Daily Shuffle - lib/auth.ts
  * Handle authentication with the Spotify API
  *
- * Copyright (C) 2025  Alice Jacka, licensed under AGPL 3.0
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * Copyright (C) 2025  Alice Jacka
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  */
 
 import * as api from './api';
