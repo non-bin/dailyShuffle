@@ -22,7 +22,7 @@ DAILYSHUFFLE_REDIRECT_URL=http://127.0.0.1:8080/callback
 DAILYSHUFFLE_DB_PATH=dailyShuffle.sqlite # Relative to cwd when running
 ```
 
-- Download the correct release binary for your system from <https://github.com/non-bin/dailyShuffle/releases/latest>, and run it.
+- Download the correct release binary for your system from <https://github.com/non-bin/dailyShuffle/releases/latest>, put it in the same directory as the `.env` file, and run it.
 
 ## Contributing
 
