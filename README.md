@@ -2,7 +2,7 @@
 
 Create shuffled versions of your Spotify playlists, refreshed every day
 
-## Configuration
+## How to Run
 
 Create a `.env` file in the directory you will run Daily Shuffle from, using the following template:
 
