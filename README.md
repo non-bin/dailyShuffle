@@ -30,9 +30,9 @@ This project is written using the [Bun](https://bun.com/) runtime, it will not w
 
 ### Running
 
-Create a `.env` file as described in [Configuration](#configuration)
+Create a `.env` file as described in [How to Run](#how-to-run)
 
-```shell
+```bash
 bun i -d # Install dev dependencies, or:
 bun i -p # Install production dependencies
 
