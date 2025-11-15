@@ -61,6 +61,7 @@ All you have to do it run `bun release` and all the weird stuff is handled. What
 - Compile `src/ui/main.ts` to `build/ui.js`
 - Set `DAILYSHUFFLE_BUNDLED=true` so the bundle knows it's a bundle and should use the bundled `ui.js`
 - Compile everything into 5 different architecture binaries in `dist/`
+- Fix the interpreter path in the elf header of the linux binaries (only needed when building on NixOS)
 
 ## License
 
