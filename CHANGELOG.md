@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Handle rate limits
 - Allow specifying run frequency
 - Specify time to run all jobs
+- Built in https
 
 ## [Unreleased]
 

@@ -1,0 +1,11 @@
+services:
+  daily-shuffle:
+    image: daily-shuffle
+    ports:
+      - '80:80'
+    volumes:
+      - /path/to/appdata:/appdata
+    environment:
+      DAILYSHUFFLE_CLIENT_ID: changeme
+      DAILYSHUFFLE_CLIENT_SECRET: changeme
+      DAILYSHUFFLE_REDIRECT_URL: https://you.domain/callback

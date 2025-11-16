@@ -12,7 +12,8 @@
   "private": false,
   "scripts": {
     "dev": "bun run --watch --no-clear-screen ./src/main.ts",
-    "release": "./release.sh"
+    "release": "./release.sh",
+    "docker": "bun release && docker build -t daily-shuffle . && docker tag daily-shuffle:latest nonbin/daily-shuffle:latest"
   },
   "type": "module",
   "author": "Alice Jacka",

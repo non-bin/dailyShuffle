@@ -2,11 +2,37 @@
 
 Create shuffled versions of your Spotify playlists, refreshed every day
 
+## How to Use
+
+- Open the WebUI and you will be immediately redirected a Spotify authorization prompt
+  - This is used to give Daily Shuffle access to your spotify playlists, as well as to authenticate you with the WebUI so there's no need for a password.
+- Once you are logged in, you can create a job with the `Add a New Job` panel
+  - First, if the list of sources is empty press `Search` to load your playlists, then select one from the dropdown
+  - You can change the name of the playlist if you like, or change it later in the Spotify app
+  - Press `Save` and you'r new playlist will be created and shuffled for the first time!
+  - Now every day all the songs in the source playlist will be copied to the destination in a random order, so if you add or remove songs from the source playlist that will be reflected after the next shuffle
+- Once you have a job saved, you can edit or remove it with the `Edit Jobs` panel
+  - Select a job by it's destination playlist
+  - To change the source playlist click `Search` to load your playlists, pick a new one from the dropdown, then click `Save`
+  - To remove the job click `Remove Job`
+    - This will just stop the shuffle job, the destination playlist will remain with it's content (you can remove it from the Spotify app)
+
 ## How to Run
 
+If you want the WebUI to be accessible from anything other than `localhost` you will need to access it through an https reverse proxy like [Nginx with Let's Encrypt](https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-20-04)
+
 - Create an app in the [Spotify Developer Portal](https://developer.spotify.com/dashboard)
-  - Check `Web API` under `Which API/SDKs are you planning to use?`
-  - Make sure to add the url of your callback endpoint to the `Redirect URIs` (this should be the same as `DAILYSHUFFLE_REDIRECT_URL`)
+- Check `Web API` under `Which API/SDKs are you planning to use?`
+- Make sure to add the url of your callback endpoint to the `Redirect URIs` (this should be the same as `DAILYSHUFFLE_REDIRECT_URL`, and end in `/callback`)
+
+### Docker (Preferred)
+
+- Download `compose.yaml`
+- Create an `appdata` folder
+- Update the environment variables and appdata path in `compose.yaml`
+- Run `docker compose up`
+
+### Standalone
 
 - Create a `.env` file in the directory you will run Daily Shuffle from, using the following template and the client ID and secret from the Spotify Developer Portal
 

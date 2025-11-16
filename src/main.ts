@@ -145,24 +145,6 @@ const server = Bun.serve({
 
 s.log(`Server running at ${server.url}`);
 
-// test //
-
-// import * as db from './lib/db';
-
-// // Boop
-// db.setJob({
-//   destinationPID: '14MPe67TMyfcY3GX38dTmP',
-//   sourcePID: '3XN2zUlYzVlTwZgNfHCKRQ',
-//   uid: 'w4ifp2anlm4zlw4ett8irmfa6'
-// });
-
-// // Test
-// db.setJob({
-//   destinationPID: '5lmyDVCHIK21SQr2WC4ui5',
-//   sourcePID: '5DkdsC3CvmF3GA5TlLxMo2',
-//   uid: 'w4ifp2anlm4zlw4ett8irmfa6'
-// });
-
 // s.runAllJobs();
 
 setInterval(
