@@ -18,7 +18,9 @@ import * as t from './types';
 const SCOPE = 'user-read-private user-read-email playlist-modify-public playlist-modify-private';
 
 // Env vars
-const REDIRECT_URL = process.env.DAILYSHUFFLE_REDIRECT_URL || 'http://127.0.0.1:8080/callback';
+const REDIRECT_URL = // TODO put all env vars in separate helper to be imported
+  process.env.DAILYSHUFFLE_REDIRECT_URL
+  || `http://${process.env.DAILYSHUFFLE_HOSTNAME || '127.0.0.1'}:${process.env.DAILYSHUFFLE_PORT || '8080'}/callback`;
 const CLIENT_ID = process.env.DAILYSHUFFLE_CLIENT_ID || '';
 if (CLIENT_ID.length === 0) {
   s.error(new Error('Please set DAILYSHUFFLE_CLIENT_ID'));
